@@ -79,6 +79,26 @@ module TSOS {
                                   "<string> - Sets the prompt.");
             this.commandList[this.commandList.length] = sc;
 
+            // date
+            sc = new ShellCommand(this.shellDate,
+                                  "date",
+                                  "- Shows the current date & time.");
+            this.commandList[this.commandList.length] = sc;
+
+            //whereami
+            //Gonna do more with this later
+            sc = new ShellCommand(this.shellWhere,
+                                  "whereami",
+                                  "- Gives a snarky response to the user.");
+            this.commandList[this.commandList.length] = sc;
+
+            //lemons
+            //Gonna do more with this later
+            sc = new ShellCommand(this.shellLemons,
+                                  "lemons",
+                                  "- I don't want your damn lemons!!!!");
+            this.commandList[this.commandList.length] = sc;
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -285,6 +305,20 @@ module TSOS {
             } else {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
             }
+        }
+
+        public shellDate(args) {
+            var displayDate = new Date().toLocaleDateString();
+            var displayTime = new Date().toLocaleTimeString();
+            _StdOut.putText(displayDate + " " + displayTime);
+        }
+
+        public shellWhere(args) {
+            _StdOut.putText("Hello and, again, welcome to the Aperture Science computer-aided enrichment center.");
+        }
+
+        public shellLemons(args) {
+            _StdOut.putText("I'm gonna burn your house down with the lemons.");
         }
 
     }

@@ -49,6 +49,17 @@ var TSOS;
             // prompt <string>
             sc = new TSOS.ShellCommand(this.shellPrompt, "prompt", "<string> - Sets the prompt.");
             this.commandList[this.commandList.length] = sc;
+            // date
+            sc = new TSOS.ShellCommand(this.shellDate, "date", "- Shows the current date & time.");
+            this.commandList[this.commandList.length] = sc;
+            //whereami
+            //Gonna do more with this later
+            sc = new TSOS.ShellCommand(this.shellWhere, "whereami", "- Gives a snarky response to the user.");
+            this.commandList[this.commandList.length] = sc;
+            //lemons
+            //Gonna do more with this later
+            sc = new TSOS.ShellCommand(this.shellLemons, "lemons", "- I don't want your damn lemons!!!!");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             //
@@ -245,6 +256,17 @@ var TSOS;
             else {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
             }
+        };
+        Shell.prototype.shellDate = function (args) {
+            var displayDate = new Date().toLocaleDateString();
+            var displayTime = new Date().toLocaleTimeString();
+            _StdOut.putText(displayDate + " " + displayTime);
+        };
+        Shell.prototype.shellWhere = function (args) {
+            _StdOut.putText("Hello and, again, welcome to the Aperture Science computer-aided enrichment center.");
+        };
+        Shell.prototype.shellLemons = function (args) {
+            _StdOut.putText("I'm gonna burn your house down with the lemons.");
         };
         return Shell;
     })();
