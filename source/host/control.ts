@@ -39,6 +39,14 @@ module TSOS {
             // Enable the added-in canvas text functions (see canvastext.ts for provenance and details).
             CanvasTextFunctions.enable(_DrawingContext);   // Text functionality is now built in to the HTML5 canvas. But this is old-school, and fun, so we'll keep it.
 
+            // Clear the date text box.
+            // Use the TypeScript cast to HTMLInputElement
+            (<HTMLInputElement> document.getElementById("taDateDisplay")).value="";
+
+            // Clear the status text box.
+            // Use the TypeScript cast to HTMLInputElement
+            (<HTMLInputElement> document.getElementById("taStatusDisplay")).value="";
+
             // Clear the log text box.
             // Use the TypeScript cast to HTMLInputElement
             (<HTMLInputElement> document.getElementById("taHostLog")).value="";
@@ -67,9 +75,18 @@ module TSOS {
             // Build the log string.
             var str: string = "({ clock:" + clock + ", source:" + source + ", msg:" + msg + ", now:" + now  + " })"  + "\n";
 
+            // Building date time var for the display above the host log
+            var displayDate = new Date().toLocaleDateString();
+            var displayTime = new Date().toLocaleTimeString();
+            var dateTime = displayDate + " " + displayTime;
+
             // Update the log console.
             var taLog = <HTMLInputElement> document.getElementById("taHostLog");
             taLog.value = str + taLog.value;
+
+            // Update the Date & Time in the console.
+            var taDate = <HTMLInputElement> document.getElementById("taDateDisplay");
+            taDate.value = dateTime;
 
             // TODO in the future: Optionally update a log database or some streaming service.
         }

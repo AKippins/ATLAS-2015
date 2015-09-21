@@ -99,6 +99,13 @@ module TSOS {
                                   "- I don't want your damn lemons!!!!");
             this.commandList[this.commandList.length] = sc;
 
+            //status
+            //Gonna do more with this later
+            sc = new ShellCommand(this.shellStatus,
+                                  "status",
+                                  "<string>- Allows the user to set a status message to keep track of the os status");
+            this.commandList[this.commandList.length] = sc;
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -319,6 +326,19 @@ module TSOS {
 
         public shellLemons(args) {
             _StdOut.putText("I'm gonna burn your house down with the lemons.");
+        }
+
+        public shellStatus(args) {
+          if (args.length > 0) {
+              var string = args[0];
+
+              // Update the user status in the console.
+              var taStatus = <HTMLInputElement> document.getElementById("taStatusDisplay");
+              taStatus.value = string;
+
+          } else {
+              _StdOut.putText("Usage: status <string>  Please supply a status message.");
+          }
         }
 
     }
