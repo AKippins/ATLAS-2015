@@ -61,8 +61,11 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellLemons, "lemons", "- I don't want your damn lemons!!!!");
             this.commandList[this.commandList.length] = sc;
             //status
+            sc = new TSOS.ShellCommand(this.shellStatus, "status", "<string> - Allows the user to set a status message to keep track of the os status.");
+            this.commandList[this.commandList.length] = sc;
+            //load
             //Gonna do more with this later
-            sc = new TSOS.ShellCommand(this.shellStatus, "status", "<string>- Allows the user to set a status message to keep track of the os status");
+            sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Validates the user code in the User Program Input.");
             this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -281,6 +284,49 @@ var TSOS;
             }
             else {
                 _StdOut.putText("Usage: status <string>  Please supply a status message.");
+            }
+        };
+        Shell.prototype.shellLoad = function (args) {
+            var taInput = document.getElementById("taProgramInput");
+            if (taInput.value.length > 0) {
+                var count;
+                for (count = 0; count != taInput.value.length; count++) {
+                    console.log(taInput.value[count]);
+                    switch (taInput.value[count]) {
+                        case "0": //valid do nothing;
+                        case "1": //valid do nothing;
+                        case "2": //valid do nothing;
+                        case "3": //valid do nothing;
+                        case "4": //valid do nothing;
+                        case "5": //valid do nothing;
+                        case "6": //valid do nothing;
+                        case "7": //valid do nothing;
+                        case "8": //valid do nothing;
+                        case "9": //valid do nothing;
+                        case "a": //valid do nothing;
+                        case "A": //valid do nothing;
+                        case "b": //valid do nothing;
+                        case "B": //valid do nothing;
+                        case "c": //valid do nothing;
+                        case "C": //valid do nothing;
+                        case "d": //valid do nothing;
+                        case "D": //valid do nothing;
+                        case "e": //valid do nothing;
+                        case "E": //valid do nothing;
+                        case "f": //valid do nothing;
+                        case "F": //valid do nothing;
+                        case " ":
+                            console.log(count);
+                            break;
+                        default:
+                            _StdOut.putText("That input is invalid, Only Hex is allowed");
+                            break;
+                    }
+                }
+                _StdOut.putText("Current input is valid.");
+            }
+            else {
+                _StdOut.putText("No input detected.");
             }
         };
         return Shell;
