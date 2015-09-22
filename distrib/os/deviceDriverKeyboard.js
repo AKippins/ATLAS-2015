@@ -187,9 +187,16 @@ var TSOS;
                 if (keyCode == 40) {
                     var change = 1;
                 }
-                _Console.index += change - 1;
+                _Console.index += change;
                 if (_Console.storedCommands[_Console.index]) {
                     _KernelInputQueue.enqueue(_Console.storedCommands[_Console.index]);
+                }
+                else if (_Console.index < 0) {
+                    //So that if you go down from the end of the list you get to 0 in the array and should get an entry.
+                    _Console.index = -1;
+                }
+                else if (_Console.index > _Console.storedCommands.length) {
+                    _Console.index = _Console.storedCommands.length;
                 }
             }
         };
