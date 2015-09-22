@@ -196,7 +196,17 @@ var TSOS;
                     _Console.index = -1;
                 }
                 else if (_Console.index > _Console.storedCommands.length) {
+                    //So that if you go up from the top of the list you get to the first entry.
                     _Console.index = _Console.storedCommands.length;
+                }
+            }
+            else if (keyCode == 8) {
+            }
+            else if (keyCode == 9) {
+                console.log("WTF");
+                console.log("Hey" + _KernelInputQueue.value);
+                if (_KernelInputQueue.value[0] == "h") {
+                    _KernelInputQueue.enqueue("help");
                 }
             }
         };
