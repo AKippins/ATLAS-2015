@@ -205,6 +205,7 @@ module TSOS {
                 if (_KernelInputQueue.value[0] == "h"){
                   _KernelInputQueue.enqueue("help");
                 }
+                //need to finish
             }
         }
     }
