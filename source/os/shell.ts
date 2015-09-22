@@ -358,7 +358,7 @@ module TSOS {
 
           if (taInput.value.length > 0) {
             var count;
-            for (count = 0; count != taInput.value.length; count++) {
+            for (count = 0; count !== taInput.value.length; count++) {
               console.log(taInput.value[count]);
               switch (taInput.value[count]){
                 case "0"://valid do nothing;

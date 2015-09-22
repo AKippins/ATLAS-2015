@@ -12,12 +12,12 @@
 module TSOS {
 
     export class Console {
-
         constructor(public currentFont = _DefaultFontFamily,
                     public currentFontSize = _DefaultFontSize,
                     public currentXPosition = 0,
                     public currentYPosition = _DefaultFontSize,
-                    public buffer = "") {
+                    public buffer = "",
+                    public storedCommands = new array()) {
         }
 
         public init(): void {
