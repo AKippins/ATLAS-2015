@@ -17,7 +17,8 @@ module TSOS {
                     public currentXPosition = 0,
                     public currentYPosition = _DefaultFontSize,
                     public buffer = "",
-                    public storedCommands = new array()) {
+                    public storedCommands = new Array(),
+                    public index = 0)  {
         }
 
         public init(): void {
@@ -40,6 +41,8 @@ module TSOS {
                 var chr = _KernelInputQueue.dequeue();
                 // Check to see if it's "special" (enter or ctrl-c) or "normal" (anything else that the keyboard device driver gave us).
                 if (chr === String.fromCharCode(13)) { //     Enter key
+                    this.storedCommands.push(this.buffer);
+                    this.index = this.storedCommands.length;
                     // The enter key marks the end of a console command, so ...
                     // ... tell the shell ...
                     _OsShell.handleInput(this.buffer);

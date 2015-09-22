@@ -173,11 +173,22 @@ module TSOS {
               _KernelInputQueue.enqueue(chr);
             }
             else if (((keyCode >= 48) && (keyCode <= 57)) ||   // digits
-                        (keyCode == 32)                     ||   // space
-                        (keyCode == 13)                     ||   // enter
-                        (keyCode == 8))  {                       // backspace
+                        (keyCode == 32)                   ||   // space
+                        (keyCode == 13)){                       // backspace
                 chr = String.fromCharCode(keyCode);
                 _KernelInputQueue.enqueue(chr);
+            }
+            else if (keyCode == 38 || keyCode == 40){
+              if (keyCode == 38){
+                var change = -1
+              }
+              if (keyCode == 40){
+                var change = 1
+              }
+              _Console.index += change - 1;
+              if (_Console.storedCommands[_Console.index]) {
+          			_KernelInputQueue.enqueue(_Console.storedCommands[_Console.index]);
+          		}
             }
         }
     }

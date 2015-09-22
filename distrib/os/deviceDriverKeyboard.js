@@ -176,10 +176,21 @@ var TSOS;
             }
             else if (((keyCode >= 48) && (keyCode <= 57)) ||
                 (keyCode == 32) ||
-                (keyCode == 13) ||
-                (keyCode == 8)) {
+                (keyCode == 13)) {
                 chr = String.fromCharCode(keyCode);
                 _KernelInputQueue.enqueue(chr);
+            }
+            else if (keyCode == 38 || keyCode == 40) {
+                if (keyCode == 38) {
+                    var change = -1;
+                }
+                if (keyCode == 40) {
+                    var change = 1;
+                }
+                _Console.index += change - 1;
+                if (_Console.storedCommands[_Console.index]) {
+                    _KernelInputQueue.enqueue(_Console.storedCommands[_Console.index]);
+                }
             }
         };
         return DeviceDriverKeyboard;
