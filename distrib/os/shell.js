@@ -296,9 +296,7 @@ var TSOS;
         Shell.prototype.shellLoad = function (args) {
             var taInput = document.getElementById("taProgramInput");
             if (taInput.value.length > 0) {
-                var count;
-                for (count = 0; count !== taInput.value.length; count++) {
-                    console.log(taInput.value[count]);
+                for (var count = 0; count !== taInput.value.length; count++) {
                     switch (taInput.value[count]) {
                         case "0": //valid do nothing;
                         case "1": //valid do nothing;
@@ -323,10 +321,11 @@ var TSOS;
                         case "f": //valid do nothing;
                         case "F": //valid do nothing;
                         case " ":
-                            console.log(count);
                             break;
                         default:
-                            _StdOut.putText("That input is invalid, Only Hex is allowed");
+                            _StdOut.putText("That input is invalid, Only Hex is allowed. Char: " + taInput.value[count] + " ");
+                            console.log("That input is invalid, Only Hex is allowed.");
+                            console.log("I need to see this " + taInput.value[count]);
                             break;
                     }
                 }
