@@ -71,7 +71,7 @@ var TSOS;
             //         Consider fixing that.
             if (text !== "") {
                 for (var x = 0; x < text.length; x++) {
-                    if (text[x] == " " && this.currentXPosition > 400) {
+                    if (text[x] == " " && this.currentXPosition > 401) {
                         this.currentXPosition = 0;
                         this.currentYPosition += _DefaultFontSize +
                             _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) +
