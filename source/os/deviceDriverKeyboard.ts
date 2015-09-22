@@ -43,7 +43,10 @@ module TSOS {
                 }
                 // TODO: Check for caps-lock and handle as shifted if so.
                 _KernelInputQueue.enqueue(chr);
-            } else if (((keyCode >= 48) && (keyCode <= 57)) ||   // digits
+            } else if (keyCode == 192 && isShifted){
+              chr = String.fromCharCode(126); //~
+            }
+            else if (((keyCode >= 48) && (keyCode <= 57)) ||   // digits
                         (keyCode == 32)                     ||   // space
                         (keyCode == 13)                     ||   // enter
                         (keyCode == 8))  {                       // backspace

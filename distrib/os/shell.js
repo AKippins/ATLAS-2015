@@ -2,6 +2,7 @@
 ///<reference path="../utils.ts" />
 ///<reference path="shellCommand.ts" />
 ///<reference path="userCommand.ts" />
+///<reference path="kernel.ts" />
 /* ------------
    Shell.ts
 
@@ -64,8 +65,10 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellStatus, "status", "<string> - Allows the user to set a status message to keep track of the os status.");
             this.commandList[this.commandList.length] = sc;
             //load
-            //Gonna do more with this later
             sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Validates the user code in the User Program Input.");
+            this.commandList[this.commandList.length] = sc;
+            //bsod
+            sc = new TSOS.ShellCommand(this.shellBSOD, "bsod", "- Only causes death and destruction man. Don't do it. Really... Don't.");
             this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -328,6 +331,9 @@ var TSOS;
             else {
                 _StdOut.putText("No input detected.");
             }
+        };
+        Shell.prototype.shellBSOD = function (args) {
+            _Kernel.krnTrapError(args[0]);
         };
         return Shell;
     })();

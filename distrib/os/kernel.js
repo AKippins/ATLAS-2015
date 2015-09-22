@@ -155,6 +155,11 @@ var TSOS;
         Kernel.prototype.krnTrapError = function (msg) {
             TSOS.Control.hostLog("OS ERROR - TRAP: " + msg);
             // TODO: Display error on console, perhaps in some sort of colored screen. (Maybe blue?)
+            // Change the background color to blue
+            _DrawingContext.rect(0, 0, _Canvas.width, _Canvas.height);
+            _DrawingContext.fillStyle = "#0033CC";
+            _DrawingContext.fill();
+            _StdOut.putText("[cough] As a result, you may have heard we\'re gonna phase out human testing. There\'s still a few things left to wrap up, though.");
             this.krnShutdown();
         };
         return Kernel;
