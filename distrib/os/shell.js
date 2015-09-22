@@ -279,11 +279,15 @@ var TSOS;
             _StdOut.putText("I'm gonna burn your house down with the lemons.");
         };
         Shell.prototype.shellStatus = function (args) {
+            var string = "";
             if (args.length > 0) {
-                var string = args[0];
-                // Update the user status in the console.
-                var taStatus = document.getElementById("taStatusDisplay");
-                taStatus.value = string;
+                for (var x = 0; x < args.length; x++) {
+                    string += args[x] + " ";
+                    console.log(string);
+                    // Update the user status in the console.
+                    var taStatus = document.getElementById("taStatusDisplay");
+                    taStatus.value = string;
+                }
             }
             else {
                 _StdOut.putText("Usage: status <string>  Please supply a status message.");
@@ -322,7 +326,7 @@ var TSOS;
                             console.log(count);
                             break;
                         default:
-                            _StdOut.putText("That input is invalid, Only Hex is allowed");
+                            _StdOut.putText("That input is invalid, Only Hex is allowed.\n");
                             break;
                     }
                 }

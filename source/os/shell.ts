@@ -341,13 +341,15 @@ module TSOS {
         }
 
         public shellStatus(args) {
+          var string = ""
           if (args.length > 0) {
-              var string = args[0];
-
+            for (var x = 0; x < args.length; x++){
+              string += args[x] + " ";
+              console.log(string);
               // Update the user status in the console.
               var taStatus = <HTMLInputElement> document.getElementById("taStatusDisplay");
               taStatus.value = string;
-
+            }
           } else {
               _StdOut.putText("Usage: status <string>  Please supply a status message.");
           }
@@ -386,7 +388,7 @@ module TSOS {
                 case " "://valid do nothing;
                          console.log(count);
                   break;
-                default: _StdOut.putText("That input is invalid, Only Hex is allowed");
+                default: _StdOut.putText("That input is invalid, Only Hex is allowed.\n");
                   break;
               }
             }
