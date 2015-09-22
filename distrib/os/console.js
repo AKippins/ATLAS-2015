@@ -104,7 +104,7 @@ var TSOS;
                 console.log("Progress...");
                 // Get canvas data, Smushes the text at the bottom of the screen. Need to fix this.
                 //getImageData(x,y,Width,Height);
-                var oldCanvas = _DrawingContext.getImageData(0, this.currentFontSize, _Canvas.width, _Canvas.height);
+                var oldCanvas = _DrawingContext.getImageData(0, this.currentFontSize + 5, _Canvas.width, _Canvas.height);
                 // Redraw the canvas with the old canvas data.
                 _DrawingContext.putImageData(oldCanvas, 0, 0);
                 // Move the current Y position down to get the text on the screen.
