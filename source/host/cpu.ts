@@ -158,6 +158,7 @@ module TSOS {
 
         public break(): void {
           this.isExecuting = false;
+          _Memory.init();
         }
 
         public compareByteX(): void {

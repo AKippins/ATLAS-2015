@@ -282,7 +282,11 @@ var TSOS;
             _StdOut.putText("I'm gonna burn your house down with the lemons.");
         };
         Shell.prototype.shellRun = function (args) {
-            var process = _MemoryManager.storedProcesses[args[0]];
+            if (args[0] > PID) {
+                return;
+            }
+            var loadedProcess = _MemoryManager.storedProcesses[args[0]];
+            _CPU.PC = loadedProcess.base;
             _CPU.isExecuting = true;
         };
         Shell.prototype.shellStatus = function (args) {
