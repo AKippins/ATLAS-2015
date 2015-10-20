@@ -41,6 +41,187 @@ module TSOS {
             _Kernel.krnTrace('CPU cycle');
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
+            console.log("PC: " + this.PC);
+            console.log("IR: " + instruction)
+            console.log("Acc: " + this.Acc);
+            console.log("X Reg: " + this.Xreg);
+            console.log("Y Reg: " + this.Yreg);
+            console.log("Z Flag: " + this.Zflag);
+            document.getElementById("pcDisplay").innerHTML = this.PC.toString();
+            document.getElementById("accDisplay").innerHTML = this.Acc.toString();
+            document.getElementById("xRegDisplay").innerHTML = this.Xreg.toString();
+            document.getElementById("yRegDisplay").innerHTML = this.Yreg.toString();
+            document.getElementById("zFlagDisplay").innerHTML = this.Zflag.toString();
+            var instruction = _MemoryManager.readFromMem(this.PC);
+            this.run(instruction);
+            if (_SingleStep){
+              this.isExecuting = false;
+            }
         }
+
+        public run(instruction): void {
+          this.PC++;
+          switch (instruction){
+            case "A9": this.loadAccumulatorConstant();
+              break;
+            case "AD": this.loadAccumulatorMemory();
+              break;
+            case "8D": this.storeAccumulatorMemory();
+              break;
+            case "6D": this.addWithCarry();
+              break;
+            case "A2": this.loadXConstant();
+              break;
+            case "AE": this.loadXMemory();
+              break;
+            case "A0": this.loadYConstant();
+              break;
+            case "AC": this.loadYMemory();
+              break;
+            case "EA": this.noOperation();
+              break;
+            case "00": this.break();
+              break;
+            case "EC": this.compareByteX();
+              break;
+            case "D0": this.branchNotEqual();
+              break;
+            case "EE": this.increment();
+              break;
+            case "FF": this.systemCall();
+              break;
+            default:console.log("Don't know what to do with this, I'm gonna brake now... " + instruction)
+                    this.isExecuting = false
+              break;
+          }
+        }
+
+        public loadAccumulatorConstant(): void {
+          this.Acc = _MemoryManager.translateBytes(_MemoryManager.readFromMem(this.PC));
+          this.PC++;
+        }
+
+        public loadAccumulatorMemory(): void {
+          var mem = _MemoryManager.translateBytes(_MemoryManager.readFromMem(this.PC));
+          this.Acc = _MemoryManager.translateBytes(_MemoryManager.readFromMem(mem));
+          this.PC++;
+          this.PC++;
+
+        }
+
+        public storeAccumulatorMemory(): void {
+          var mem = _MemoryManager.translateBytes(_MemoryManager.readFromMem(this.PC));
+          var toBeStored = this.Acc.toString(16);
+          _MemoryManager.writeToMem(mem, toBeStored);
+          this.PC++;
+          this.PC++;
+
+        }
+
+        public addWithCarry(): void {
+          var mem = _MemoryManager.translateBytes(_MemoryManager.readFromMem(this.PC));
+          this.Acc += _MemoryManager.translateBytes(_MemoryManager.readFromMem(mem));
+          this.PC++;
+          this.PC++;
+
+        }
+
+        public loadXConstant(): void {
+          this.Xreg = _MemoryManager.translateBytes(_MemoryManager.readFromMem(this.PC));
+          this.PC++;
+        }
+
+        public loadXMemory(): void {
+          var mem = _MemoryManager.translateBytes(_MemoryManager.readFromMem(this.PC));
+          this.Xreg = _MemoryManager.translateBytes(_MemoryManager.readFromMem(mem));
+          this.PC++;
+          this.PC++;
+
+        }
+
+        public loadYConstant(): void {
+          this.Yreg = _MemoryManager.translateBytes(_MemoryManager.readFromMem(this.PC));
+          this.PC++;
+        }
+
+        public loadYMemory(): void {
+          var mem = _MemoryManager.translateBytes(_MemoryManager.readFromMem(this.PC));
+          this.Yreg = _MemoryManager.translateBytes(_MemoryManager.readFromMem(mem));
+          this.PC++;
+          this.PC++;
+
+        }
+
+        public noOperation(): void {
+          //Welp I think this is ok
+        }
+
+        public break(): void {
+          this.isExecuting = false;
+        }
+
+        public compareByteX(): void {
+          var mem = _MemoryManager.translateBytes(_MemoryManager.readFromMem(this.PC));
+          var compare = _MemoryManager.translateBytes(_MemoryManager.readFromMem(mem));
+          if (compare === this.Xreg){
+            this.Zflag = 1;
+          } else {
+            this.Zflag = 0;
+          }
+          this.PC++;
+          this.PC++;
+        }
+
+        public branchNotEqual(): void {
+          if (this.Zflag === 0){
+            this.PC += _MemoryManager.translateBytes(_MemoryManager.readFromMem(this.PC)) + 1;
+            if (this.PC > MAIN_MEMORY){
+              this.PC -= MAIN_MEMORY;
+            }
+          } else {
+            this.PC++
+          }
+        }
+
+        public increment(): void {
+          var mem = _MemoryManager.translateBytes(_MemoryManager.readFromMem(this.PC));
+          var toBeStored = _MemoryManager.translateBytes(_MemoryManager.readFromMem(mem));
+          toBeStored += 1;
+          _MemoryManager.writeToMem(mem, toBeStored.toString(16));
+          this.PC++;
+          this.PC++;
+        }
+
+        public systemCall(): void {
+          if (this.Xreg === 1) {
+                _StdOut.putText(this.Yreg.toString());
+            }
+          else if (this.Xreg === 2) {
+              console.log(this.Yreg);
+              var address = this.Yreg
+              //var mem = _MemoryManager.translateBytes(_MemoryManager.readFromMem(this.Yreg));
+              //console.log(mem);
+              var stringChar = _MemoryManager.readFromMem(address);
+              var broken = 0;
+              while (stringChar !== "00") {
+                  console.log(address);
+                  console.log(stringChar);
+                  _StdOut.putText(String.fromCharCode(_MemoryManager.translateBytes(stringChar)));
+                  address++;
+                  stringChar = _MemoryManager.readFromMem(address);
+                  broken++;
+                  if (broken == 15){
+                    break;
+                  }
+              }
+          }
+          else {
+              _StdOut.putText("Xreg is supposed to be either 1 or 2.");
+              _CPU.isExecuting = false;
+          }
+        }
+
+
+
     }
 }

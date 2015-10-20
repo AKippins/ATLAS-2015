@@ -110,6 +110,8 @@ module TSOS {
             _CPU = new Cpu();  // Note: We could simulate multi-core systems by instantiating more than one instance of the CPU here.
             _CPU.init();       //       There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
 
+            _Memory = new Memory();
+            _MemoryManager = new MemoryManager();
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
             // .. and call the OS Kernel Bootstrap routine.
@@ -133,6 +135,16 @@ module TSOS {
             // That boolean parameter is the 'forceget' flag. When it is true it causes the page to always
             // be reloaded from the server. If it is false or not specified the browser may reload the
             // page from its cache, which is not what we want.
+        }
+
+        public static hostBtnSingleStep_click(btn): void {
+            _SingleStep = !_SingleStep
+        }
+
+        public static hostBtnStep_click(btn): void {
+            if (_SingleStep){
+              _CPU.isExecuting = true;
+            }
         }
     }
 }
