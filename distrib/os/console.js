@@ -10,20 +10,20 @@
 var TSOS;
 (function (TSOS) {
     var Console = (function () {
-        function Console(currentFont, currentFontSize, currentXPosition, currentYPosition, buffer, storedCommands, index) {
+        function Console(storedCommands, currentFont, currentFontSize, currentXPosition, currentYPosition, buffer, index) {
+            if (storedCommands === void 0) { storedCommands = new Array(); }
             if (currentFont === void 0) { currentFont = _DefaultFontFamily; }
             if (currentFontSize === void 0) { currentFontSize = _DefaultFontSize; }
             if (currentXPosition === void 0) { currentXPosition = 0; }
             if (currentYPosition === void 0) { currentYPosition = _DefaultFontSize; }
             if (buffer === void 0) { buffer = ""; }
-            if (storedCommands === void 0) { storedCommands = new Array(); }
             if (index === void 0) { index = 0; }
+            this.storedCommands = storedCommands;
             this.currentFont = currentFont;
             this.currentFontSize = currentFontSize;
             this.currentXPosition = currentXPosition;
             this.currentYPosition = currentYPosition;
             this.buffer = buffer;
-            this.storedCommands = storedCommands;
             this.index = index;
         }
         Console.prototype.init = function () {
@@ -32,6 +32,25 @@ var TSOS;
         };
         Console.prototype.clearScreen = function () {
             _DrawingContext.clearRect(0, 0, _Canvas.width, _Canvas.height);
+        };
+        Console.prototype.clearLine = function () {
+            var xStartPos = this.currentXPosition;
+            var yStartPos = this.currentYPosition - _DefaultFontSize;
+            for (var x = 0; x < this.buffer.length; x++) {
+                xStartPos -= _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(x));
+            }
+            _DrawingContext.clearRect(xStartPos, yStartPos, this.currentXPosition, this.currentYPosition);
+            this.currentXPosition = xStartPos;
+        };
+        Console.prototype.clearCharacter = function (char) {
+            var xStartPos = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, char);
+            var yStartPos = this.currentYPosition - _DefaultFontSize;
+            // Trim the buffer
+            this.buffer = this.buffer.substring(0, this.buffer.length - 1);
+            // Draw a rectangle over the letter that was deleted
+            _DrawingContext.clearRect(xStartPos, yStartPos, this.currentXPosition, this.currentYPosition);
+            // Move the current X position since we've removed a character
+            this.currentXPosition -= _DrawingContext.measureText(this.currentFont, this.currentFontSize, char);
         };
         Console.prototype.resetXY = function () {
             this.currentXPosition = 0;

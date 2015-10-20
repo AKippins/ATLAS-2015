@@ -68,7 +68,10 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Validates the user code in the User Program Input.");
             this.commandList[this.commandList.length] = sc;
             //bsod
-            sc = new TSOS.ShellCommand(this.shellBSOD, "bsod", "- Only causes death and destruction man. Don't do it. Really... Don't.");
+            sc = new TSOS.ShellCommand(this.shellBSOD, "bsod", "- Only causes death and destruction man. Don't do it. Really... Don't do it please.");
+            this.commandList[this.commandList.length] = sc;
+            //run
+            sc = new TSOS.ShellCommand(this.shellRun, "run", "<Integer> - Run a program that has been loaded");
             this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -278,6 +281,10 @@ var TSOS;
         Shell.prototype.shellLemons = function (args) {
             _StdOut.putText("I'm gonna burn your house down with the lemons.");
         };
+        Shell.prototype.shellRun = function (args) {
+            var process = _MemoryManager.storedProcesses[args[0]];
+            _CPU.isExecuting = true;
+        };
         Shell.prototype.shellStatus = function (args) {
             var string = "";
             if (args.length > 0) {
@@ -295,6 +302,7 @@ var TSOS;
         };
         Shell.prototype.shellLoad = function (args) {
             var taInput = document.getElementById("taProgramInput");
+            var load = false;
             if (taInput.value.length > 0) {
                 for (var count = 0; count !== taInput.value.length; count++) {
                     switch (taInput.value[count]) {
@@ -321,15 +329,24 @@ var TSOS;
                         case "f": //valid do nothing;
                         case "F": //valid do nothing;
                         case " ":
+                            load = true;
                             break;
                         default:
                             _StdOut.putText("That input is invalid, Only Hex is allowed. Char: " + taInput.value[count] + " ");
+                            load = false;
                             console.log("That input is invalid, Only Hex is allowed.");
                             console.log("I need to see this " + taInput.value[count]);
                             break;
                     }
                 }
                 _StdOut.putText("Current input is valid.");
+                if (load) {
+                    var code = taInput.value.replace(/\s/g, '');
+                    console.log(PID);
+                    _Console.advanceLine();
+                    _StdOut.putText("The current program has the PID: " + PID);
+                    _MemoryManager.load(code);
+                }
             }
             else {
                 _StdOut.putText("No input detected.");

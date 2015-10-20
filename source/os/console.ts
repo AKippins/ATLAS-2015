@@ -12,12 +12,12 @@
 module TSOS {
 
     export class Console {
-        constructor(public currentFont = _DefaultFontFamily,
+        constructor(public storedCommands = new Array(),
+                    public currentFont = _DefaultFontFamily,
                     public currentFontSize = _DefaultFontSize,
                     public currentXPosition = 0,
                     public currentYPosition = _DefaultFontSize,
                     public buffer = "",
-                    public storedCommands = new Array(),
                     public index = 0)  {
         }
 
@@ -28,6 +28,29 @@ module TSOS {
 
         private clearScreen(): void {
             _DrawingContext.clearRect(0, 0, _Canvas.width, _Canvas.height);
+        }
+
+        public clearLine(): void {
+          var xStartPos = this.currentXPosition
+          var yStartPos = this.currentYPosition - _DefaultFontSize;
+
+          for (var x = 0; x < this.buffer.length; x++) {
+      			xStartPos -= _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(x));
+      		}
+      		_DrawingContext.clearRect(xStartPos, yStartPos, this.currentXPosition, this.currentYPosition);
+      		this.currentXPosition = xStartPos;
+        }
+
+        public clearCharacter(char): void {
+          var xStartPos = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, char);
+          var yStartPos = this.currentYPosition - _DefaultFontSize;
+
+          // Trim the buffer
+          this.buffer = this.buffer.substring(0, this.buffer.length - 1);
+          // Draw a rectangle over the letter that was deleted
+          _DrawingContext.clearRect(xStartPos, yStartPos, this.currentXPosition, this.currentYPosition);
+          // Move the current X position since we've removed a character
+          this.currentXPosition -= _DrawingContext.measureText(this.currentFont, this.currentFontSize, char);
         }
 
         private resetXY(): void {

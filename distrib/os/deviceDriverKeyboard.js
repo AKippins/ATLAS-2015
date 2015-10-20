@@ -181,6 +181,8 @@ var TSOS;
                 _KernelInputQueue.enqueue(chr);
             }
             else if (keyCode == 38 || keyCode == 40) {
+                _Console.clearLine();
+                _Console.buffer = "";
                 if (keyCode == 38) {
                     var change = -1;
                 }
@@ -189,24 +191,39 @@ var TSOS;
                 }
                 _Console.index += change;
                 if (_Console.storedCommands[_Console.index]) {
+                    console.log("Current Buffer: " + _Console.buffer);
+                    console.log("Command In Queue: " + _Console.storedCommands[_Console.index]);
                     _KernelInputQueue.enqueue(_Console.storedCommands[_Console.index]);
                 }
                 else if (_Console.index < 0) {
-                    //So that if you go down from the end of the list you get to 0 in the array and should get an entry.
+                    //So that if you go up from the bottom of the list you get to 0 in the array and should get an entry.
                     _Console.index = -1;
                 }
                 else if (_Console.index > _Console.storedCommands.length) {
-                    //So that if you go up from the top of the list you get to the first entry.
-                    _Console.index = _Console.storedCommands.length;
+                    //So that if you go down from the top of the list you get to the first entry.
+                    _Console.index = _Console.storedCommands.length - 1;
                 }
             }
             else if (keyCode == 8) {
+                //Hope backspace code just appears here... todo
+                var char = _Console.buffer.charAt(_Console.buffer.length - 1);
+                // Checking for a blank buffer
+                if (char == "") {
+                    // If blank we wanna do nothing.
+                    return;
+                }
+                _Console.clearCharacter(char);
             }
             else if (keyCode == 9) {
-                console.log("WTF");
-                console.log("Hey" + _KernelInputQueue.value);
-                if (_KernelInputQueue.value[0] == "h") {
-                    _KernelInputQueue.enqueue("help");
+                var end = _Console.buffer.length - 1;
+                var matches = [];
+                console.log(_Shell.commandList[0]);
+                for (var x = 0; x < _Shell.commandList.length; x++) {
+                    if (_Console.buffer.substring(0, end) == _Shell.commandList[x].substring(0, end)) {
+                        matches.push(_Shell.commandList[x]);
+                    }
+                }
+                if (matches.length == 1) {
                 }
             }
         };
