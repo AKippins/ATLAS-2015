@@ -23,6 +23,7 @@
          pcb.limit = limit;
          this.storedProcesses[pcb.Pid] = pcb;
          pcb.Pid++;
+         PID = pcb.Pid
          return pcb.Pid - 1;
        }
 

@@ -23,6 +23,7 @@ var TSOS;
             pcb.limit = limit;
             this.storedProcesses[pcb.Pid] = pcb;
             pcb.Pid++;
+            PID = pcb.Pid;
             return pcb.Pid - 1;
         };
         MemoryManager.prototype.storeToMem = function (code) {

@@ -347,7 +347,11 @@ module TSOS {
         }
 
         public shellRun(args) {
-          var process = _MemoryManager.storedProcesses[args[0]]
+          if (args[0] > PID){
+            return
+          }
+          var loadedProcess = _MemoryManager.storedProcesses[args[0]]
+          _CPU.PC = loadedProcess.base;
           _CPU.isExecuting = true;
         }
 

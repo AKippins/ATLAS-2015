@@ -10,8 +10,9 @@ module TSOS {
 
       public init(): void {
         for (var x = 0; x < this.bytes; x++){
-          this.memory[x].push("00");
+          this.memory[x] = "00";
         }
+        this.base = 0;
       }
     }
   }
