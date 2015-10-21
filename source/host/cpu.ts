@@ -160,6 +160,8 @@ module TSOS {
         public break(): void {
           this.isExecuting = false;
           _Memory.init();
+          _Console.advanceLine();
+          _OsShell.putPrompt();
         }
 
         public compareByteX(): void {

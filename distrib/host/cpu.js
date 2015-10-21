@@ -160,6 +160,8 @@ var TSOS;
         Cpu.prototype.break = function () {
             this.isExecuting = false;
             _Memory.init();
+            _Console.advanceLine();
+            _OsShell.putPrompt();
         };
         Cpu.prototype.compareByteX = function () {
             var mem = _MemoryManager.translateBytes(_MemoryManager.readFromMem(this.PC));
