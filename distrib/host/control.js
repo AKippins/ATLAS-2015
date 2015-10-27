@@ -116,6 +116,16 @@ var TSOS;
         };
         Control.hostBtnSingleStep_click = function (btn) {
             _SingleStep = !_SingleStep;
+            if (_SingleStep == true) {
+                document.getElementById("btnSingleStep").style.backgroundColor = "#8CC152";
+                document.getElementById("btnStep").style.backgroundColor = "#8CC152";
+                document.getElementById("btnStep").disabled = false;
+            }
+            else if (_SingleStep == false) {
+                document.getElementById("btnSingleStep").style.backgroundColor = "#AAB2BD";
+                document.getElementById("btnStep").style.backgroundColor = "#AAB2BD";
+                document.getElementById("btnStep").disabled = true;
+            }
         };
         Control.hostBtnStep_click = function (btn) {
             if (_SingleStep) {

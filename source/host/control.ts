@@ -140,6 +140,15 @@ module TSOS {
 
         public static hostBtnSingleStep_click(btn): void {
             _SingleStep = !_SingleStep
+            if (_SingleStep == true){
+              (<HTMLButtonElement>document.getElementById("btnSingleStep")).style.backgroundColor = "#8CC152";
+              (<HTMLButtonElement>document.getElementById("btnStep")).style.backgroundColor = "#8CC152";
+              (<HTMLButtonElement>document.getElementById("btnStep")).disabled = false;
+            } else if (_SingleStep == false) {
+              (<HTMLButtonElement>document.getElementById("btnSingleStep")).style.backgroundColor = "#AAB2BD";
+              (<HTMLButtonElement>document.getElementById("btnStep")).style.backgroundColor = "#AAB2BD";
+              (<HTMLButtonElement>document.getElementById("btnStep")).disabled = true;
+            }
         }
 
         public static hostBtnStep_click(btn): void {

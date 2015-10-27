@@ -57,9 +57,22 @@
     					<li><a href="#" id="btnStartOS" name="brnStartOS" value="Start" tabindex="0" onclick="TSOS.Control.hostBtnStartOS_click(this);" style="color:white">Start</a></li>
     					<li><a href="#" id="btnHaltOS" name="brnHaltOS" value="Halt" tabindex="1" onclick="TSOS.Control.hostBtnHaltOS_click(this);" style="color:white">Halt</a></li>
     					<li><a href="#" id="btnReset" name="brnReset" value="Reset" tabindex="2" onclick="TSOS.Control.hostBtnReset_click(this)" style="color:white">Reset</a></li>
-              <li><a href="#" id="btnSingleStep" name="brnSingleStep" value="Single Step Mode" tabindex="3" onclick="TSOS.Control.hostBtnSingleStep_click(this)" style="color:white">Single Step Mode</a></li>
-              <li><a href="#" id="btnStep" name="brnStep" value="Step" class="disabled" tabindex="4" onclick="TSOS.Control.hostBtnStep_click(this)" style="color:white">Step</a></li>
     				</ul>
+          <div class="navbar-form navbar-right">
+            <div class="form-group">
+            <input class="form-control text-center"
+                   name ="taDateDisplay"
+                   id   ="taDateDisplay"
+                   style="width:250px"
+            ></input>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-block" href="#" id="btnSingleStep" name="brnSingleStep" value="Single Step Mode" tabindex="3" onclick="TSOS.Control.hostBtnSingleStep_click(this)">Single Step Mode</button>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-block" href="#" id="btnStep" name="brnStep" value="Step" disabled tabindex="4" onclick="TSOS.Control.hostBtnStep_click(this)">Step</button>
+          </div>
+          </div>
     			</div>
     		</div>
     	</div>
@@ -68,8 +81,8 @@
 			<div class="row" id="divMain">
 				<div class="col-md-6">
     			<div class="col-md-12">
+           <label>Console</label>
            <div id="divConsole">
-             <label>Console</label>
               <canvas id="display"
                       width="500px"
                       height="500px"
@@ -109,42 +122,18 @@
 					<div id="divStatuses">
 						<div class="row">
               <div class="col-md-12">
-               <div id="divLog">
-                  <label>
-                     Host Log
-                     <br>
-                     <textarea name ="taDateDisplay"
-                               id   ="taDateDisplay"
-                               rows ="1"
-                               cols ="50"
-                     ></textarea>
-                     <br>
-                     <textarea name="taStatusDisplay"
-                               id  ="taStatusDisplay"
-                               rows="1"
-                               cols="50"
-                               value="Started and operational."
-                     ></textarea>
-                     <br>
-                     <textarea name="taHostLog"
-                               id  ="taHostLog"
-                               rows="5"
-                               cols="50"
-                     ></textarea>
-                  </label>
-               </div>
+                  <label>Status</label>
+                  <input class="form-control" name="taStatusDisplay" id="taStatusDisplay" value="Started and operational."></input>
+                  <br>
 
-               <div id="divUserProgramInput">
-                  <label>
-                     User Program Input
-                     <br>
-                     <textarea name="taProgramInput"
-                               id  ="taProgramInput"
-                               rows="8"
-                               cols="50"
-                     ></textarea>
-                  </label>
-               </div>
+                  <label>Host Log</label>
+                  <textarea class="form-control" name="taHostLog" id="taHostLog" rows="3"></textarea>
+                  <br>
+
+                <label>User Program Input</label>
+                <br>
+                <textarea class="form-control" name="taProgramInput" id="taProgramInput" rows="4"></textarea>
+
                <div class="tab-pane fade in active" id="divMemoryWrapper">
 											<table id="divMemory" class="table table-bordered memory-display-div">
                         <thead>
