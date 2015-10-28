@@ -350,6 +350,7 @@ var TSOS;
                     _Console.advanceLine();
                     _StdOut.putText("The current program has the PID: " + PID);
                     _MemoryManager.load(code);
+                    _Memory.update();
                 }
             }
             else {

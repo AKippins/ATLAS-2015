@@ -34,11 +34,14 @@ var TSOS;
         };
         MemoryManager.prototype.readFromMem = function (address) {
             address += this.storedProcesses[RunningProcess].base;
+            var memId = "mem" + address;
+            //document.getElementById(memId).className = "active";
             return _Memory[address];
         };
         MemoryManager.prototype.writeToMem = function (address, data) {
             address += this.storedProcesses[RunningProcess].base;
             _Memory[address] = data;
+            _Memory.update();
         };
         MemoryManager.prototype.translateBytes = function (hex) {
             return parseInt(hex, 16);

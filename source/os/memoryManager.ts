@@ -36,17 +36,50 @@
 
       public readFromMem(address): any{
         address += this.storedProcesses[RunningProcess].base
+        var memId = "mem" + address;
+        //document.getElementById(memId).className = "active";
         return _Memory[address];
       }
 
       public writeToMem(address, data): void{
         address += this.storedProcesses[RunningProcess].base
         _Memory[address] = data;
+        _Memory.update();
       }
 
       public translateBytes(hex): number{
         return parseInt(hex, 16);
       }
+
+    /*  public printToScreen(): void{
+        var memoryDiv = <HTMLInputElement> document.getElementById("divMemory");
+      	var output = "<tbody>";
+      	var numDigits = this.getNumberOfDigitsOfBytes();
+
+      	for (var i = 0; i < _Memory.bytes; i++) {
+      		// We are going to print rows of 8 columns each
+      		if (i % 8 === 0) {
+      			output += '</tr><tr><td>' + this.formatHexRowHeader(i, numDigits) + '</td>';
+      		}
+      		output += '<td data-id="' + i + '"> ' + _Memory.memory[i] + '</td>';
+      	}
+      	output += "</tbody>";
+      	memoryDiv.find('tbody').replaceWith(output);
+      };
+
+      public formatHexRowHeader(baseTenNum, numOfDigits): string {
+      	var baseSixteenNum = baseTenNum.toString(16).toUpperCase(),
+      		paddedNumber = '' + baseSixteenNum;
+
+      	while (paddedNumber.length < numOfDigits) {
+      		paddedNumber = '0' + paddedNumber;
+      	}
+      	return '0x' + paddedNumber;
+      };
+
+      public getNumberOfDigitsOfBytes(): number{
+      	return ('' + _Memory.bytes.toString(16)).length;
+      };*/
 
 
     }

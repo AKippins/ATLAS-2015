@@ -36,7 +36,7 @@
    <!-- Other Routines -->
    <script type="text/javascript" src="distrib/utils.js"></script>
    <!-- Uncomment this line below to enable GLaDOS testing -->
-   <script type="text/javascript" src="http://www.labouseur.com/courses/os/projects/glados.js"></script>
+   <!--<script type="text/javascript" src="http://www.labouseur.com/courses/os/projects/glados.js"></script>-->
 </head>
 
 <body onload="onDocumentLoad()">
@@ -82,18 +82,16 @@
 				<div class="col-md-6">
     			<div class="col-md-12">
            <label>Console</label>
-           <div id="divConsole">
               <canvas id="display"
-                      width="500px"
+                      width="523px"
                       height="500px"
                       tabindex="3"
-                      style="border:1px solid">
+                      style="border: 1px solid #bdc3c7; border-radius: 6px;">
               </canvas>
-           </div>
 
-           <div id="cpuDisplay">
         		<label>CPU</label>
-        				<table class="table table-bordered">
+            <div class="panel panel-default" style="border: 1px solid #bdc3c7; border-radius: 6px;">
+                <table class="table">
         					<thead>
         						<tr>
         							<th>PC</th>
@@ -106,16 +104,16 @@
         					</thead>
         					<tbody>
         						<tr>
-        							<td id="pcDisplay"></td>
-                      <td id="irDisplay"></td>
-        							<td id="accDisplay"></td>
-        							<td id="xRegDisplay"></td>
-        							<td id="yRegDisplay"></td>
-        							<td id="zFlagDisplay"></td>
+        							<td id="pcDisplay">N/A</td>
+                      <td id="irDisplay">N/A</td>
+        							<td id="accDisplay">N/A</td>
+        							<td id="xRegDisplay">N/A</td>
+        							<td id="yRegDisplay">N/A</td>
+        							<td id="zFlagDisplay">N/A</td>
         						</tr>
         					</tbody>
         				</table>
-        			</div>
+              </div>
     		</div>
       </div>
         <div class="col-md-6">
@@ -131,15 +129,18 @@
                   <br>
 
                 <label>User Program Input</label>
-                <br>
                 <textarea class="form-control" name="taProgramInput" id="taProgramInput" rows="4"></textarea>
+                <br>
 
-               <div class="tab-pane fade in active" id="divMemoryWrapper">
-											<table id="divMemory" class="table table-bordered memory-display-div">
-                        <thead>
-                        </thead>
-											</table>
-							</div>
+                <label>Memory</label>
+                <br>
+                <div class="panel panel-body panel-default" style="border: 1px solid #bdc3c7; border-radius: 6px; height:270px; overflow:auto">
+                  <table class="table table-condensed">
+										<tbody id="divMemory">
+										</tbody>
+									</table>
+								</div>
+
              </div>
             </div>
           </div>

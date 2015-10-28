@@ -82,7 +82,12 @@ module TSOS {
 
             // Update the log console.
             var taLog = <HTMLInputElement> document.getElementById("taHostLog");
-            taLog.value = str + taLog.value;
+            var lastMsg = taLog.value.substr(0, taLog.value.indexOf("\n"));
+            if (lastMsg.indexOf("msg:Idle") > 0) {
+              taLog.value = taLog.value.replace(lastMsg + "\n", str);
+            } else {
+              taLog.value = str + taLog.value;
+            }
 
             // Update the Date & Time in the console.
             var taDate = <HTMLInputElement> document.getElementById("taDateDisplay");
@@ -111,8 +116,10 @@ module TSOS {
             _CPU.init();       //       There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
 
             _Memory = new Memory();
+            this.initilizeMem();
             _Memory.init();
             _MemoryManager = new MemoryManager();
+            //_MemoryManager.printToScreen();
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
             // .. and call the OS Kernel Bootstrap routine.
@@ -155,6 +162,19 @@ module TSOS {
             if (_SingleStep){
               _CPU.isExecuting = true;
             }
+        }
+
+        public static initilizeMem(): void {
+          var nextRow = "";
+          for (var i = 0, len = _Memory.memory.length; i < len; i++) {
+              // Initiate UI
+              if (i % 8 === 0) {
+                  nextRow += "</tr>";
+                  document.getElementById("divMemory").innerHTML += nextRow;
+                  nextRow = "<tr><td>0x" + i.toString(16) + "</td>";
+              }
+              nextRow += "<td id='mem" + i + "'>00</td>";
+          }
         }
     }
 }
