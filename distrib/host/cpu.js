@@ -16,18 +16,20 @@
 var TSOS;
 (function (TSOS) {
     var Cpu = (function () {
-        function Cpu(PC, Acc, Xreg, Yreg, Zflag, isExecuting) {
+        function Cpu(PC, Acc, Xreg, Yreg, Zflag, limit, isExecuting) {
             if (PC === void 0) { PC = 0; }
             if (Acc === void 0) { Acc = 0; }
             if (Xreg === void 0) { Xreg = 0; }
             if (Yreg === void 0) { Yreg = 0; }
             if (Zflag === void 0) { Zflag = 0; }
+            if (limit === void 0) { limit = 0; }
             if (isExecuting === void 0) { isExecuting = false; }
             this.PC = PC;
             this.Acc = Acc;
             this.Xreg = Xreg;
             this.Yreg = Yreg;
             this.Zflag = Zflag;
+            this.limit = limit;
             this.isExecuting = isExecuting;
         }
         Cpu.prototype.init = function () {
@@ -43,18 +45,7 @@ var TSOS;
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
             var instruction = _MemoryManager.readFromMem(this.PC);
-            console.log("PC: " + this.PC);
-            console.log("IR: " + instruction);
-            console.log("Acc: " + this.Acc);
-            console.log("X Reg: " + this.Xreg);
-            console.log("Y Reg: " + this.Yreg);
-            console.log("Z Flag: " + this.Zflag);
-            document.getElementById("pcDisplay").innerHTML = this.PC.toString();
-            document.getElementById("irDisplay").innerHTML = instruction;
-            document.getElementById("accDisplay").innerHTML = this.Acc.toString();
-            document.getElementById("xRegDisplay").innerHTML = this.Xreg.toString();
-            document.getElementById("yRegDisplay").innerHTML = this.Yreg.toString();
-            document.getElementById("zFlagDisplay").innerHTML = this.Zflag.toString();
+            this.updateDisplay(instruction);
             this.run(instruction);
             if (_SingleStep) {
                 this.isExecuting = false;
@@ -178,8 +169,8 @@ var TSOS;
         Cpu.prototype.branchNotEqual = function () {
             if (this.Zflag === 0) {
                 this.PC += _MemoryManager.translateBytes(_MemoryManager.readFromMem(this.PC)) + 1;
-                if (this.PC > MAIN_MEMORY) {
-                    this.PC -= MAIN_MEMORY;
+                if (this.PC > this.limit) {
+                    this.PC -= 256;
                 }
             }
             else {
@@ -221,6 +212,20 @@ var TSOS;
                 _StdOut.putText("Xreg is supposed to be either 1 or 2.");
                 _CPU.isExecuting = false;
             }
+        };
+        Cpu.prototype.updateDisplay = function (instruction) {
+            document.getElementById("pcDisplay").innerHTML = this.PC.toString();
+            document.getElementById("irDisplay").innerHTML = instruction;
+            document.getElementById("accDisplay").innerHTML = this.Acc.toString();
+            document.getElementById("xRegDisplay").innerHTML = this.Xreg.toString();
+            document.getElementById("yRegDisplay").innerHTML = this.Yreg.toString();
+            document.getElementById("zFlagDisplay").innerHTML = this.Zflag.toString();
+            document.getElementById("pcDisplayPCB").innerHTML = this.PC.toString();
+            document.getElementById("irDisplayPCB").innerHTML = instruction;
+            document.getElementById("accDisplayPCB").innerHTML = this.Acc.toString();
+            document.getElementById("xRegDisplayPCB").innerHTML = this.Xreg.toString();
+            document.getElementById("yRegDisplayPCB").innerHTML = this.Yreg.toString();
+            document.getElementById("zFlagDisplayPCB").innerHTML = this.Zflag.toString();
         };
         return Cpu;
     })();

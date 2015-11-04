@@ -14,10 +14,23 @@ var TSOS;
         MemoryManager.prototype.init = function () {
         };
         MemoryManager.prototype.load = function (code) {
+            /*if (_Memory[0] == "00"){
+              var base = 0;
+              var limit = 255;
+            } else if (_Memory[256] == "00"){
+              var base = 256;
+              var limit = 511;
+            } else if (_Memory[512] == "00"){
+              var base = 512;
+              var limit = 767;
+            } else {
+              _StdOut.putText("All of the avaliable memory has been allocated please clear memory");
+              return;
+            }*/
             var base = _Memory.base;
             this.storeToMem(code);
-            var limit = base + code.length;
-            _Memory.base = limit;
+            var limit = base + 255; //code.length;
+            _Memory.base = limit + 1;
             var pcb = new TSOS.Pcb();
             pcb.base = base;
             pcb.limit = limit;

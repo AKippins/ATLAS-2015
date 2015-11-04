@@ -63,7 +63,7 @@
             <input class="form-control text-center"
                    name ="taDateDisplay"
                    id   ="taDateDisplay"
-                   style="width:250px"
+                   style="width:255px"
             ></input>
           </div>
           <div class="form-group">
@@ -89,6 +89,13 @@
                       style="border: 1px solid #bdc3c7; border-radius: 6px; overflow:auto;">
               </canvas>
 
+              <div class="row">
+                <div class="col-md-4">
+                  <label>User Program Input</label>
+                  <textarea class="form-control" name="taProgramInput" id="taProgramInput" rows="3"></textarea>
+                  <br>
+                </div>
+                <div class="col-md-8">
         		<label>CPU</label>
             <div class="panel panel-default" style="border: 1px solid #bdc3c7; border-radius: 6px;">
                 <table class="table">
@@ -115,6 +122,9 @@
         				</table>
               </div>
     		</div>
+
+      </div>
+    </div>
       </div>
         <div class="col-md-6">
 					<div id="divStatuses">
@@ -128,9 +138,35 @@
                   <textarea class="form-control" name="taHostLog" id="taHostLog" rows="3"></textarea>
                   <br>
 
-                <label>User Program Input</label>
-                <textarea class="form-control" name="taProgramInput" id="taProgramInput" rows="4"></textarea>
-                <br>
+                  <label>Processes</label>
+                  <div class="panel panel-default" style="border: 1px solid #bdc3c7; border-radius: 6px;">
+                      <table class="table">
+              					<thead>
+              						<tr>
+                            <th>PID</th>
+                            <th>PC</th>
+                            <th>IR</th>
+              							<th>Acc</th>
+              							<th>X-Reg</th>
+              							<th>Y-Reg</th>
+              							<th>Z-Reg</th>
+                            <th>State</th>
+              						</tr>
+              					</thead>
+              					<tbody>
+              						<tr>
+                            <td id="">N/A</td>
+              							<td id="pcDisplayPCB">N/A</td>
+                            <td id="irDisplayPCB">N/A</td>
+              							<td id="accDisplayPCB">N/A</td>
+              							<td id="xRegDisplayPCB">N/A</td>
+              							<td id="yRegDisplayPCB">N/A</td>
+              							<td id="zFlagDisplayPCB">N/A</td>
+                            <td id="">N/A</td>
+              						</tr>
+              					</tbody>
+              				</table>
+                    </div>
 
                 <label>Memory</label>
                 <br>

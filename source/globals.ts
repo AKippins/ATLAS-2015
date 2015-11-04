@@ -20,7 +20,7 @@ const TIMER_IRQ: number = 0;  // Pages 23 (timer), 9 (interrupts), and 561 (inte
                               // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
 const KEYBOARD_IRQ: number = 1;
 
-const MAIN_MEMORY: number = 256;
+const MAIN_MEMORY: number = 768;
 
 
 
@@ -29,6 +29,10 @@ const MAIN_MEMORY: number = 256;
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
 //
 var _CPU: TSOS.Cpu;  // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
+
+var _PCB: TSOS.Pcb;
+
+var _Control: TSOS.Control;
 
 var _Shell: TSOS.Shell;
 

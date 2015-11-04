@@ -287,6 +287,7 @@ var TSOS;
             }
             var loadedProcess = _MemoryManager.storedProcesses[args[0]];
             _CPU.PC = loadedProcess.base;
+            _CPU.limit = loadedProcess.limit;
             _CPU.isExecuting = true;
         };
         Shell.prototype.shellStatus = function (args) {

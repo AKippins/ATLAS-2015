@@ -24,6 +24,7 @@ module TSOS {
                     public Xreg: number = 0,
                     public Yreg: number = 0,
                     public Zflag: number = 0,
+                    public limit: number = 0,
                     public isExecuting: boolean = false) {
 
         }
@@ -42,18 +43,7 @@ module TSOS {
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
             var instruction = _MemoryManager.readFromMem(this.PC);
-            console.log("PC: " + this.PC);
-            console.log("IR: " + instruction)
-            console.log("Acc: " + this.Acc);
-            console.log("X Reg: " + this.Xreg);
-            console.log("Y Reg: " + this.Yreg);
-            console.log("Z Flag: " + this.Zflag);
-            document.getElementById("pcDisplay").innerHTML = this.PC.toString();
-            document.getElementById("irDisplay").innerHTML = instruction;
-            document.getElementById("accDisplay").innerHTML = this.Acc.toString();
-            document.getElementById("xRegDisplay").innerHTML = this.Xreg.toString();
-            document.getElementById("yRegDisplay").innerHTML = this.Yreg.toString();
-            document.getElementById("zFlagDisplay").innerHTML = this.Zflag.toString();
+            this.updateDisplay(instruction);
             this.run(instruction);
             if (_SingleStep){
               this.isExecuting = false;
@@ -179,8 +169,8 @@ module TSOS {
         public branchNotEqual(): void {
           if (this.Zflag === 0){
             this.PC += _MemoryManager.translateBytes(_MemoryManager.readFromMem(this.PC)) + 1;
-            if (this.PC > MAIN_MEMORY){
-              this.PC -= MAIN_MEMORY;
+            if (this.PC > this.limit){
+              this.PC -= 256;
             }
           } else {
             this.PC++
@@ -225,7 +215,21 @@ module TSOS {
           }
         }
 
+        public updateDisplay(instruction): void{
+          document.getElementById("pcDisplay").innerHTML = this.PC.toString();
+          document.getElementById("irDisplay").innerHTML = instruction;
+          document.getElementById("accDisplay").innerHTML = this.Acc.toString();
+          document.getElementById("xRegDisplay").innerHTML = this.Xreg.toString();
+          document.getElementById("yRegDisplay").innerHTML = this.Yreg.toString();
+          document.getElementById("zFlagDisplay").innerHTML = this.Zflag.toString();
+          document.getElementById("pcDisplayPCB").innerHTML = this.PC.toString();
+          document.getElementById("irDisplayPCB").innerHTML = instruction;
+          document.getElementById("accDisplayPCB").innerHTML = this.Acc.toString();
+          document.getElementById("xRegDisplayPCB").innerHTML = this.Xreg.toString();
+          document.getElementById("yRegDisplayPCB").innerHTML = this.Yreg.toString();
+          document.getElementById("zFlagDisplayPCB").innerHTML = this.Zflag.toString();
 
+        }
 
     }
 }
