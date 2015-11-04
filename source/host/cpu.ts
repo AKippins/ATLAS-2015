@@ -149,7 +149,7 @@ module TSOS {
 
         public break(): void {
           this.isExecuting = false;
-          _Memory.init();
+          _Memory.clearMem();
           _Console.advanceLine();
           _OsShell.putPrompt();
         }

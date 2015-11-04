@@ -150,7 +150,7 @@ var TSOS;
         };
         Cpu.prototype.break = function () {
             this.isExecuting = false;
-            _Memory.init();
+            _Memory.clearMem();
             _Console.advanceLine();
             _OsShell.putPrompt();
         };
