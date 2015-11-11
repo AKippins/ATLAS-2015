@@ -347,7 +347,9 @@ module TSOS {
         }
 
         public shellRun(args) {
-          if (args[0] > PID){
+          console.log("This is whats " + (_MemoryManager.storedProcesses[args[0]] === false));
+          if (!_MemoryManager.storedProcesses[args[0]]){
+            _StdOut.putText("There is no program with that PID sorry.");
             return
           }
           var loadedProcess = _MemoryManager.storedProcesses[args[0]]

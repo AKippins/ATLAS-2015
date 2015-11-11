@@ -282,7 +282,9 @@ var TSOS;
             _StdOut.putText("I'm gonna burn your house down with the lemons.");
         };
         Shell.prototype.shellRun = function (args) {
-            if (args[0] > PID) {
+            console.log("This is whats " + (_MemoryManager.storedProcesses[args[0]] === false));
+            if (!_MemoryManager.storedProcesses[args[0]]) {
+                _StdOut.putText("There is no program with that PID sorry.");
                 return;
             }
             var loadedProcess = _MemoryManager.storedProcesses[args[0]];
