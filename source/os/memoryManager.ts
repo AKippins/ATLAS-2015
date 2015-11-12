@@ -43,7 +43,9 @@
          var pcb = new Pcb();
          pcb.base = base;
          pcb.limit = limit;
-         this.storedProcesses[pcb.Pid] = pcb;
+         var processState = new ProcessState();
+         processState.pcb = pcb;
+         _ResidentList[pcb.Pid] = processState;
          pcb.Pid++;
          PID = pcb.Pid
          return pcb.Pid - 1;
@@ -57,14 +59,14 @@
       }
 
       public readFromMem(address): any{
-        address += this.storedProcesses[RunningProcess].base
+        address += _ResidentList[RunningProcess].base
         var memId = "mem" + address;
         //document.getElementById(memId).className = "active";
         return _Memory[address];
       }
 
       public writeToMem(address, data): void{
-        address += this.storedProcesses[RunningProcess].base
+        address += _ResidentList[RunningProcess].base
         _Memory[address] = data;
         _Memory.update();
       }

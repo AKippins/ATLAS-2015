@@ -46,7 +46,9 @@ var TSOS;
             var pcb = new TSOS.Pcb();
             pcb.base = base;
             pcb.limit = limit;
-            this.storedProcesses[pcb.Pid] = pcb;
+            var processState = new TSOS.ProcessState();
+            processState.pcb = pcb;
+            _ResidentList[pcb.Pid] = processState;
             pcb.Pid++;
             PID = pcb.Pid;
             return pcb.Pid - 1;
@@ -58,13 +60,13 @@ var TSOS;
             }
         };
         MemoryManager.prototype.readFromMem = function (address) {
-            address += this.storedProcesses[RunningProcess].base;
+            address += _ResidentList[RunningProcess].base;
             var memId = "mem" + address;
             //document.getElementById(memId).className = "active";
             return _Memory[address];
         };
         MemoryManager.prototype.writeToMem = function (address, data) {
-            address += this.storedProcesses[RunningProcess].base;
+            address += _ResidentList[RunningProcess].base;
             _Memory[address] = data;
             _Memory.update();
         };

@@ -347,14 +347,14 @@ module TSOS {
         }
 
         public shellRun(args) {
-          console.log("This is whats " + (_MemoryManager.storedProcesses[args[0]] === false));
-          if (!_MemoryManager.storedProcesses[args[0]]){
+          if (!_ResidentList[args[0]]){
             _StdOut.putText("There is no program with that PID sorry.");
             return
           }
-          var loadedProcess = _MemoryManager.storedProcesses[args[0]]
-          _CPU.PC = loadedProcess.base;
-          _CPU.limit = loadedProcess.limit;
+          var loadedProcess = _ResidentList[args[0]]
+          loadedProcess.printToScreen();
+          _CPU.PC = loadedProcess.pcb.base;
+          _CPU.limit = loadedProcess.pcb.limit;
           _CPU.isExecuting = true;
         }
 
@@ -415,11 +415,15 @@ module TSOS {
             _StdOut.putText("Current input is valid.");
             if (load){
               var code = taInput.value.replace(/\s/g, '');
-              console.log(PID);
               _Console.advanceLine();
-              _StdOut.putText("The current program has the PID: " + PID);
-              _MemoryManager.load(code);
-              _Memory.update();
+              if (_Memory.base < 768){
+                _StdOut.putText("The current program has the PID: " + PID);
+                _MemoryManager.load(code);
+                _Memory.update();
+              } else {
+              _StdOut.putText("There currently isn't enough avaliable memory. Please clear the memory.");
+              return;
+              }
             }
           } else {
             _StdOut.putText("No input detected.");

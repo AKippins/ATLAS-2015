@@ -44,9 +44,16 @@ var TSOS;
             _Kernel.krnTrace('CPU cycle');
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
-            var instruction = _MemoryManager.readFromMem(this.PC);
-            this.updateDisplay(instruction);
-            this.run(instruction);
+            //Didn't work for testing bounds need to figure out.
+            if (this.PC > this.limit) {
+                _StdOut.putText("Memory Out Of Bounds Error.");
+                this.isExecuting = false;
+            }
+            else {
+                var instruction = _MemoryManager.readFromMem(this.PC);
+                this.updateDisplay(instruction);
+                this.run(instruction);
+            }
             if (_SingleStep) {
                 this.isExecuting = false;
             }
@@ -150,6 +157,11 @@ var TSOS;
         };
         Cpu.prototype.break = function () {
             this.isExecuting = false;
+            _CurrentProcess.pcb.pc = this.PC;
+            _CurrentProcess.pcb.acc = this.Acc;
+            _CurrentProcess.pcb.xReg = this.Xreg;
+            _CurrentProcess.pcb.yReg = this.Yreg;
+            _CurrentProcess.pcb.zFlag = this.Zflag;
             _Memory.clearMem();
             _Console.advanceLine();
             _OsShell.putPrompt();
@@ -220,12 +232,12 @@ var TSOS;
             document.getElementById("xRegDisplay").innerHTML = this.Xreg.toString();
             document.getElementById("yRegDisplay").innerHTML = this.Yreg.toString();
             document.getElementById("zFlagDisplay").innerHTML = this.Zflag.toString();
-            document.getElementById("pcDisplayPCB").innerHTML = this.PC.toString();
+            /*document.getElementById("pcDisplayPCB").innerHTML = this.PC.toString();
             document.getElementById("irDisplayPCB").innerHTML = instruction;
             document.getElementById("accDisplayPCB").innerHTML = this.Acc.toString();
             document.getElementById("xRegDisplayPCB").innerHTML = this.Xreg.toString();
             document.getElementById("yRegDisplayPCB").innerHTML = this.Yreg.toString();
-            document.getElementById("zFlagDisplayPCB").innerHTML = this.Zflag.toString();
+            document.getElementById("zFlagDisplayPCB").innerHTML = this.Zflag.toString();*/
         };
         return Cpu;
     })();
