@@ -43,6 +43,13 @@ module TSOS {
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
             //Didn't work for testing bounds need to figure out.
+            if (_CPU.isExecuting) {
+              if (_CpuScheduler.determineNeedToContextSwitch()) {
+                _CpuScheduler.contextSwitch();
+              }
+            } else {
+              _CpuScheduler.start();
+            }
             if (this.PC > this.limit){
               _StdOut.putText("Memory Out Of Bounds Error.");
               this.isExecuting = false;
@@ -155,11 +162,11 @@ module TSOS {
 
         public break(): void {
           this.isExecuting = false;
-          _CurrentProcess.pcb.pc = this.PC;
-	        _CurrentProcess.pcb.acc = this.Acc;
-	        _CurrentProcess.pcb.xReg = this.Xreg;
-	        _CurrentProcess.pcb.yReg = this.Yreg;
-	        _CurrentProcess.pcb.zFlag = this.Zflag;
+          //_CurrentProcess.pcb.pc = this.PC;
+	        //_CurrentProcess.pcb.acc = this.Acc;
+	        //_CurrentProcess.pcb.xReg = this.Xreg;
+	        //_CurrentProcess.pcb.yReg = this.Yreg;
+	        //_CurrentProcess.pcb.zFlag = this.Zflag;
           _Memory.clearMem();
           _Console.advanceLine();
           _OsShell.putPrompt();

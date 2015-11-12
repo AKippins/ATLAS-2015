@@ -59,14 +59,14 @@
       }
 
       public readFromMem(address): any{
-        address += _ResidentList[RunningProcess].base
+        address += _ResidentList[RunningProcess].pcb.base
         var memId = "mem" + address;
         //document.getElementById(memId).className = "active";
         return _Memory[address];
       }
 
       public writeToMem(address, data): void{
-        address += _ResidentList[RunningProcess].base
+        address += _ResidentList[RunningProcess].pcb.base
         _Memory[address] = data;
         _Memory.update();
       }

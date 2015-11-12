@@ -60,13 +60,13 @@ var TSOS;
             }
         };
         MemoryManager.prototype.readFromMem = function (address) {
-            address += _ResidentList[RunningProcess].base;
+            address += _ResidentList[RunningProcess].pcb.base;
             var memId = "mem" + address;
             //document.getElementById(memId).className = "active";
             return _Memory[address];
         };
         MemoryManager.prototype.writeToMem = function (address, data) {
-            address += _ResidentList[RunningProcess].base;
+            address += _ResidentList[RunningProcess].pcb.base;
             _Memory[address] = data;
             _Memory.update();
         };

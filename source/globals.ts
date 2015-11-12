@@ -64,7 +64,9 @@ var _KernelInterruptQueue;          // Initializing this to null (which I would 
 var _KernelInputQueue: any = null;  // Is this better? I don't like uninitialized variables. But I also don't like using the type specifier 'any'
 var _KernelBuffers: any[] = null;   // when clearly 'any' is not what we want. There is likely a better way, but what is it?
 var _ReadyQueue = null;
-var _ResidentList = [];
+var _ResidentList = null;
+
+var _CpuScheduler = null;
 
 var _CurrentProcess = null;
 

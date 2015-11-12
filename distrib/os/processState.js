@@ -29,7 +29,8 @@ var TSOS;
             /*var table = $('#readyQueueDisplay').find('table'),
                 tbody = table.find('tbody'),
                 thisTr = tbody.children('[data-id="proc' + this.pcb.pid + '"]');*/
-            if (document.getElementById(("proc" + this.pcb.pid))) {
+            console.log(document.getElementById("proc" + this.pcb.pid));
+            if (document.getElementById("proc" + this.pcb.pid) != null) {
                 // It is already on the table
                 document.getElementById("proc" + this.pcb.pid).style.display = "none";
                 document.getElementById("divPCB").innerHTML += this.createDisplayRow();

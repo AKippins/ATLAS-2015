@@ -45,6 +45,9 @@ module TSOS {
             //
             // ... more?
             //
+            _CpuScheduler = new CpuScheduler();
+          	_ResidentList = new Array();
+          	_ReadyQueue = new Array();
 
             // Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)
             this.krnTrace("Enabling the interrupts.");
@@ -94,6 +97,13 @@ module TSOS {
             }
         }
 
+        public determineSchedulingChoice(){
+          if (_CpuScheduler.determineNeedToContextSwitch()) {
+            _CpuScheduler.contextSwitch();
+            }
+            _CPU.cycle();
+            _CurrentProgram.printToScreen();
+        }
 
         //
         // Interrupt Handling
