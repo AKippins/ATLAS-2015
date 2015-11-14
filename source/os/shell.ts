@@ -130,6 +130,18 @@ module TSOS {
                                   "<Integer> - Run all programs that have been loaded.");
                                   this.commandList[this.commandList.length] = sc;
 
+            //clearmem
+            sc = new ShellCommand(this.shellClearMem,
+                                  "clearmem",
+                                  "- Clears the memory held in RAM.");
+                                  this.commandList[this.commandList.length] = sc;
+
+            //quantum
+            sc = new ShellCommand(this.shellQuantum,
+                                  "quantum",
+                                  "<Integer> - Sets the quantum for round robin scheduling.");
+                                  this.commandList[this.commandList.length] = sc;
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -463,6 +475,16 @@ module TSOS {
 
         public shellBSOD(args) {
             _Kernel.krnTrapError(args[0]);
+        }
+
+        public shellClearMem(args) {
+          _Memory.clearMem();
+          _Memory.update();
+          _StdOut.putText("Memory has been cleared.");
+        }
+
+        public shellQuantum(args) {
+            QUANTUM = args[0];
         }
     }
 }

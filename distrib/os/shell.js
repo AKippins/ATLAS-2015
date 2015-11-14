@@ -76,6 +76,12 @@ var TSOS;
             //runall
             sc = new TSOS.ShellCommand(this.shellRunAll, "runall", "<Integer> - Run all programs that have been loaded.");
             this.commandList[this.commandList.length] = sc;
+            //clearmem
+            sc = new TSOS.ShellCommand(this.shellClearMem, "clearmem", "- Clears the memory held in RAM.");
+            this.commandList[this.commandList.length] = sc;
+            //quantum
+            sc = new TSOS.ShellCommand(this.shellQuantum, "quantum", "<Integer> - Sets the quantum for round robin scheduling.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             //
@@ -395,6 +401,14 @@ var TSOS;
         };
         Shell.prototype.shellBSOD = function (args) {
             _Kernel.krnTrapError(args[0]);
+        };
+        Shell.prototype.shellClearMem = function (args) {
+            _Memory.clearMem();
+            _Memory.update();
+            _StdOut.putText("Memory has been cleared.");
+        };
+        Shell.prototype.shellQuantum = function (args) {
+            QUANTUM = args[0];
         };
         return Shell;
     })();
