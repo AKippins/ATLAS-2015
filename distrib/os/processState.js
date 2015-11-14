@@ -1,3 +1,4 @@
+///<reference path="../globals.ts" />
 var TSOS;
 (function (TSOS) {
     var ProcessState = (function () {
@@ -6,10 +7,7 @@ var TSOS;
             // Hold a program's current state
             state, 
             // Hold where the program currently resides
-            location, 
-            // Hold the program's priority, only used in priority scheduling,
-            // but a default value of 10 is given here
-            priority) {
+            location, priority) {
             if (pcb === void 0) { pcb = null; }
             if (state === void 0) { state = 0; }
             if (location === void 0) { location = null; }
@@ -18,62 +16,63 @@ var TSOS;
             this.state = state;
             this.location = location;
             this.priority = priority;
-            // Define some constants for the possible states
-            this.NEW = 0;
-            this.READY = 1;
-            this.RUNNING = 2;
-            this.WAITING = 3;
-            this.TERMINATED = 4;
         }
-        ProcessState.prototype.printToScreen = function () {
-            /*var table = $('#readyQueueDisplay').find('table'),
-                tbody = table.find('tbody'),
-                thisTr = tbody.children('[data-id="proc' + this.pcb.pid + '"]');*/
-            console.log(document.getElementById("proc" + this.pcb.pid));
-            if (document.getElementById("proc" + this.pcb.pid) != null) {
-                // It is already on the table
-                document.getElementById("proc" + this.pcb.pid).style.display = "none";
-                document.getElementById("divPCB").innerHTML += this.createDisplayRow();
-            }
-            else {
-                // We need to add it to the table
-                document.getElementById("divPCB").innerHTML += this.createDisplayRow();
-            }
-            if (this.state === this.TERMINATED) {
-                document.getElementById("proc" + this.pcb.pid).style.display = "none";
-            }
-        };
-        ;
+        /*public printToScreen(): void{
+          var table = $('#divPCB').find('table'),
+              tbody = table.find('tbody'),
+              thisTr = tbody.children('[data-id="' + this.pcb.pid + '"]');
+  
+          if (thisTr.length) {
+              // It is already on the table
+              thisTr.replaceWith(this.createDisplayRow());
+          } else {
+              // We need to add it to the table
+              tbody.append(this.createDisplayRow());
+          }
+  
+          if (this.state === TERMINATED) {
+              thisTr = tbody.children('[data-id="' + this.pcb.pid + '"]');
+              thisTr.hide('fast');
+          }
+        };*/
         ProcessState.prototype.createDisplayRow = function () {
-            return '<tr data-id="proc' + this.pcb.pid + '" data-state="' + this.state + '">' +
-                '<td class="pidDisplayPCB">' + this.pcb.pid + '</td>' +
-                '<td class="pcDisplayPCB">' + this.pcb.pc + '</td>' +
-                '<td class="accDisplayPCB">' + this.pcb.acc + '</td>' +
-                '<td class="xRegDisplayPCB">' + this.pcb.xReg + '</td>' +
-                '<td class="yRegDisplayPCB">' + this.pcb.yReg + '</td>' +
-                '<td class="zFlagDisplayPCB">' + this.pcb.zFlag + '</td>' +
+            return '<tr data-id="proc' + this.pcb.Pid + '" data-state="' + this.state + '">' +
+                '<td class="pidDisplayPCB">' + this.pcb.Pid + '</td>' +
+                '<td class="pcDisplayPCB">' + this.pcb.PC + '</td>' +
+                '<td class="accDisplayPCB">' + this.pcb.Acc + '</td>' +
+                '<td class="xRegDisplayPCB">' + this.pcb.Xreg + '</td>' +
+                '<td class="yRegDisplayPCB">' + this.pcb.Yreg + '</td>' +
+                '<td class="zFlagDisplayPCB">' + this.pcb.Zflag + '</td>' +
                 '<td class="">' + this.priority + '</td>' +
                 '<td class="processStateDisplay">' + this.stateIntToString(this.state) + '</td></tr>';
         };
         ;
         ProcessState.prototype.stateIntToString = function (stateInt) {
             var state = parseInt(stateInt);
-            if (state === this.NEW) {
+            if (state === NEW) {
                 return "New";
             }
-            else if (state === this.READY) {
+            else if (state === READY) {
                 return "Ready";
             }
-            else if (state === this.RUNNING) {
+            else if (state === RUNNING) {
                 return "Running";
             }
-            else if (state === this.WAITING) {
+            else if (state === WAITING) {
                 return "Waiting";
             }
-            else if (state === this.TERMINATED) {
+            else if (state === TERMINATED) {
                 return "Terminated";
             }
             return "Invalid State Code";
+        };
+        ;
+        ProcessState.prototype.updatePcbWithCpu = function () {
+            this.pcb.PC = _CPU.PC;
+            this.pcb.Acc = _CPU.Acc;
+            this.pcb.Xreg = _CPU.Xreg;
+            this.pcb.Yreg = _CPU.Yreg;
+            this.pcb.Zflag = _CPU.Zflag;
         };
         ;
         return ProcessState;

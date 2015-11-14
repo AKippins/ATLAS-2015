@@ -71,7 +71,10 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellBSOD, "bsod", "- Only causes death and destruction man. Don't do it. Really... Don't do it please.");
             this.commandList[this.commandList.length] = sc;
             //run
-            sc = new TSOS.ShellCommand(this.shellRun, "run", "<Integer> - Run a program that has been loaded");
+            sc = new TSOS.ShellCommand(this.shellRun, "run", "<Integer> - Run a program that has been loaded.");
+            this.commandList[this.commandList.length] = sc;
+            //runall
+            sc = new TSOS.ShellCommand(this.shellRunAll, "runall", "<Integer> - Run all programs that have been loaded.");
             this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -287,10 +290,35 @@ var TSOS;
                 return;
             }
             var loadedProcess = _ResidentList[args[0]];
-            loadedProcess.printToScreen();
-            _CPU.PC = loadedProcess.pcb.base;
-            _CPU.limit = loadedProcess.pcb.limit;
-            _CPU.isExecuting = true;
+            _ReadyQueue.push(loadedProcess);
+            //loadedProcess.printToScreen();
+            if (_CPU.isExecuting) {
+                if (_CpuScheduler.determineNeedToContextSwitch()) {
+                    _CpuScheduler.contextSwitch();
+                }
+            }
+            else {
+                _CpuScheduler.start();
+            }
+            //_CPU.PC = loadedProcess.pcb.base;
+            //_CPU.limit = loadedProcess.pcb.limit;
+            //_CPU.isExecuting = true;
+        };
+        Shell.prototype.shellRunAll = function () {
+            for (var i = 0; i < _ResidentList.length; i++) {
+                var loadedProcess = _ResidentList[i];
+                if (loadedProcess && loadedProcess.state !== TERMINATED) {
+                    _ReadyQueue.push(loadedProcess);
+                    if (_CPU.isExecuting) {
+                        if (_CpuScheduler.determineNeedToContextSwitch()) {
+                            _CpuScheduler.contextSwitch();
+                        }
+                    }
+                    else {
+                        _CpuScheduler.start();
+                    }
+                }
+            }
         };
         Shell.prototype.shellStatus = function (args) {
             var string = "";

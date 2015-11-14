@@ -121,7 +121,13 @@ module TSOS {
             //run
             sc = new ShellCommand(this.shellRun,
                                   "run",
-                                  "<Integer> - Run a program that has been loaded");
+                                  "<Integer> - Run a program that has been loaded.");
+                                  this.commandList[this.commandList.length] = sc;
+
+            //runall
+            sc = new ShellCommand(this.shellRunAll,
+                                  "runall",
+                                  "<Integer> - Run all programs that have been loaded.");
                                   this.commandList[this.commandList.length] = sc;
 
             // ps  - list the running processes and their IDs
@@ -352,10 +358,35 @@ module TSOS {
             return
           }
           var loadedProcess = _ResidentList[args[0]]
-          loadedProcess.printToScreen();
-          _CPU.PC = loadedProcess.pcb.base;
-          _CPU.limit = loadedProcess.pcb.limit;
-          _CPU.isExecuting = true;
+          _ReadyQueue.push(loadedProcess);
+          //loadedProcess.printToScreen();
+          if (_CPU.isExecuting) {
+            if (_CpuScheduler.determineNeedToContextSwitch()) {
+              _CpuScheduler.contextSwitch();
+            }
+          } else {
+            _CpuScheduler.start();
+          }
+          //_CPU.PC = loadedProcess.pcb.base;
+          //_CPU.limit = loadedProcess.pcb.limit;
+          //_CPU.isExecuting = true;
+        }
+
+        public shellRunAll(){
+          for (var i = 0; i < _ResidentList.length; i++) {
+    			  var loadedProcess = _ResidentList[i];
+      			if (loadedProcess && loadedProcess.state !== TERMINATED) {
+      				_ReadyQueue.push(loadedProcess);
+              if (_CPU.isExecuting) {
+        				if (_CpuScheduler.determineNeedToContextSwitch()) {
+        					_CpuScheduler.contextSwitch();
+        				}
+        			} else {
+        				_CpuScheduler.start();
+        			}
+      				//_ResidentList[i].printToScreen();
+    			  }
+    		  }
         }
 
         public shellStatus(args) {

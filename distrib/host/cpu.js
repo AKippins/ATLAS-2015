@@ -32,36 +32,37 @@ var TSOS;
             this.limit = limit;
             this.isExecuting = isExecuting;
         }
-        Cpu.prototype.init = function () {
-            this.PC = 0;
-            this.Acc = 0;
-            this.Xreg = 0;
-            this.Yreg = 0;
-            this.Zflag = 0;
-            this.isExecuting = false;
+        Cpu.prototype.init = function (processState, isExecuting) {
+            if (processState) {
+                this.PC = processState.pcb.PC;
+                this.Acc = processState.pcb.Acc;
+                this.Xreg = processState.pcb.Xreg;
+                this.Yreg = processState.pcb.Yreg;
+                this.Zflag = processState.pcb.Zflag;
+            }
+            else {
+                this.PC = 0;
+                this.Acc = 0;
+                this.Xreg = 0;
+                this.Yreg = 0;
+                this.Zflag = 0;
+            }
+            if (isExecuting) {
+                this.isExecuting = isExecuting;
+            }
+            else {
+                this.isExecuting = false;
+            }
         };
         Cpu.prototype.cycle = function () {
             _Kernel.krnTrace('CPU cycle');
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
             //Didn't work for testing bounds need to figure out.
-            if (_CPU.isExecuting) {
-                if (_CpuScheduler.determineNeedToContextSwitch()) {
-                    _CpuScheduler.contextSwitch();
-                }
-            }
-            else {
-                _CpuScheduler.start();
-            }
-            if (this.PC > this.limit) {
-                _StdOut.putText("Memory Out Of Bounds Error.");
-                this.isExecuting = false;
-            }
-            else {
-                var instruction = _MemoryManager.readFromMem(this.PC);
-                this.updateDisplay(instruction);
-                this.run(instruction);
-            }
+            _CycleCounter++;
+            var instruction = _MemoryManager.readFromMem(this.PC);
+            this.updateDisplay(instruction);
+            this.run(instruction);
             if (_SingleStep) {
                 this.isExecuting = false;
             }
@@ -165,11 +166,13 @@ var TSOS;
         };
         Cpu.prototype.break = function () {
             this.isExecuting = false;
-            //_CurrentProcess.pcb.pc = this.PC;
-            //_CurrentProcess.pcb.acc = this.Acc;
-            //_CurrentProcess.pcb.xReg = this.Xreg;
-            //_CurrentProcess.pcb.yReg = this.Yreg;
-            //_CurrentProcess.pcb.zFlag = this.Zflag;
+            _CurrentProcess.pcb.PC = this.PC;
+            _CurrentProcess.pcb.Acc = this.Acc;
+            _CurrentProcess.pcb.Xreg = this.Xreg;
+            _CurrentProcess.pcb.Yreg = this.Yreg;
+            _CurrentProcess.pcb.Zflag = this.Zflag;
+            _CurrentProcess.state = TERMINATED;
+            _CpuScheduler.contextSwitch();
             _Memory.clearMem();
             _Console.advanceLine();
             _OsShell.putPrompt();
@@ -189,7 +192,7 @@ var TSOS;
         Cpu.prototype.branchNotEqual = function () {
             if (this.Zflag === 0) {
                 this.PC += _MemoryManager.translateBytes(_MemoryManager.readFromMem(this.PC)) + 1;
-                if (this.PC > this.limit) {
+                if (this.PC >= this.limit) {
                     this.PC -= 256;
                 }
             }
@@ -208,24 +211,20 @@ var TSOS;
         Cpu.prototype.systemCall = function () {
             if (this.Xreg === 1) {
                 _StdOut.putText(this.Yreg.toString());
+                console.log("Fuck ME" + this.Yreg.toString());
             }
             else if (this.Xreg === 2) {
-                console.log(this.Yreg);
                 var address = this.Yreg;
                 //var mem = _MemoryManager.translateBytes(_MemoryManager.readFromMem(this.Yreg));
                 //console.log(mem);
                 var stringChar = _MemoryManager.readFromMem(address);
                 var broken = 0;
                 while (stringChar !== "00") {
-                    console.log(address);
-                    console.log(stringChar);
+                    //console.log(address);
+                    //console.log(stringChar);
                     _StdOut.putText(String.fromCharCode(_MemoryManager.translateBytes(stringChar)));
                     address++;
                     stringChar = _MemoryManager.readFromMem(address);
-                    broken++;
-                    if (broken == 15) {
-                        break;
-                    }
                 }
             }
             else {
@@ -240,12 +239,12 @@ var TSOS;
             document.getElementById("xRegDisplay").innerHTML = this.Xreg.toString();
             document.getElementById("yRegDisplay").innerHTML = this.Yreg.toString();
             document.getElementById("zFlagDisplay").innerHTML = this.Zflag.toString();
-            /*document.getElementById("pcDisplayPCB").innerHTML = this.PC.toString();
-            document.getElementById("irDisplayPCB").innerHTML = instruction;
-            document.getElementById("accDisplayPCB").innerHTML = this.Acc.toString();
-            document.getElementById("xRegDisplayPCB").innerHTML = this.Xreg.toString();
-            document.getElementById("yRegDisplayPCB").innerHTML = this.Yreg.toString();
-            document.getElementById("zFlagDisplayPCB").innerHTML = this.Zflag.toString();*/
+            //console.log(_CurrentProcess.pcb.Pid + ": " + this.PC.toString());
+            console.log(_CurrentProcess.pcb.Pid + ": " + instruction);
+            //console.log(_CurrentProcess.pcb.Pid + ": " + this.Acc.toString());
+            //console.log(_CurrentProcess.pcb.Pid + ": " + this.Xreg.toString());
+            //console.log(_CurrentProcess.pcb.Pid + ": " + this.Yreg.toString());
+            //console.log(_CurrentProcess.pcb.Pid + ": " + this.Zflag.toString());
         };
         return Cpu;
     })();

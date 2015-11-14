@@ -50,6 +50,17 @@ var _OSclock: number = 0;  // Page 23.
 
 var _Mode: number = 0;     // (currently unused)  0 = Kernel Mode, 1 = User Mode.  See page 21.
 
+// Define some constants for the possible states
+var NEW: number = 0;
+var READY: number = 1;
+var RUNNING: number = 2;
+var WAITING: number = 3;
+var TERMINATED: number = 4;
+
+var QUANTUM = 6;
+var _CycleCounter = 0;
+
+
 var _Canvas: HTMLCanvasElement;         // Initialized in Control.hostInit().
 var _DrawingContext: any; // = _Canvas.getContext("2d");  // Assigned here for type safety, but re-initialized in Control.hostInit() for OCD and logic.
 var _DefaultFontFamily: string = "sans";        // Ignored, I think. The was just a place-holder in 2008, but the HTML canvas may have use for it.

@@ -43,6 +43,8 @@
          var pcb = new Pcb();
          pcb.base = base;
          pcb.limit = limit;
+         pcb.PC = base;
+         console.log(base, limit);
          var processState = new ProcessState();
          processState.pcb = pcb;
          _ResidentList[pcb.Pid] = processState;

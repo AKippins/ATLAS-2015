@@ -46,6 +46,8 @@ var TSOS;
             var pcb = new TSOS.Pcb();
             pcb.base = base;
             pcb.limit = limit;
+            pcb.PC = base;
+            console.log(base, limit);
             var processState = new TSOS.ProcessState();
             processState.pcb = pcb;
             _ResidentList[pcb.Pid] = processState;

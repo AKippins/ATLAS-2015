@@ -1,3 +1,6 @@
+///<reference path="../globals.ts" />
+
+
 module TSOS {
     export class ProcessState {
       constructor(// Hold a program's PCB
@@ -6,65 +9,63 @@ module TSOS {
       	          public state: number = 0,
       	          // Hold where the program currently resides
       	          public location: any = null,
-      	          // Hold the program's priority, only used in priority scheduling,
-      	          // but a default value of 10 is given here
       	          public priority: number = 10
                 ){}
 
-      // Define some constants for the possible states
-      public NEW: number = 0;
-      public READY: number = 1;
-      public RUNNING: number = 2;
-      public WAITING: number = 3;
-      public TERMINATED: number = 4;
 
-
-      public printToScreen(): void{
-      	/*var table = $('#readyQueueDisplay').find('table'),
+      /*public printToScreen(): void{
+      	var table = $('#divPCB').find('table'),
       		tbody = table.find('tbody'),
-      		thisTr = tbody.children('[data-id="proc' + this.pcb.pid + '"]');*/
+      		thisTr = tbody.children('[data-id="' + this.pcb.pid + '"]');
 
-        console.log(document.getElementById("proc" + this.pcb.pid));
-      	if (document.getElementById("proc" + this.pcb.pid) != null) {
+      	if (thisTr.length) {
       		// It is already on the table
-          document.getElementById("proc" + this.pcb.pid).style.display = "none";
-          document.getElementById("divPCB").innerHTML += this.createDisplayRow();
+      		thisTr.replaceWith(this.createDisplayRow());
       	} else {
       		// We need to add it to the table
-      		document.getElementById("divPCB").innerHTML += this.createDisplayRow();
+      		tbody.append(this.createDisplayRow());
       	}
 
-      	if (this.state === this.TERMINATED) {
-      		document.getElementById("proc" + this.pcb.pid).style.display = "none";
+      	if (this.state === TERMINATED) {
+      		thisTr = tbody.children('[data-id="' + this.pcb.pid + '"]');
+      		thisTr.hide('fast');
       	}
-      };
+      };*/
 
       public createDisplayRow(): string{
-      	return '<tr data-id="proc' + this.pcb.pid + '" data-state="' + this.state +'">' +
-      			'<td class="pidDisplayPCB">' + this.pcb.pid + '</td>' +
-      			'<td class="pcDisplayPCB">' + this.pcb.pc + '</td>' +
-      			'<td class="accDisplayPCB">' + this.pcb.acc + '</td>' +
-      			'<td class="xRegDisplayPCB">' + this.pcb.xReg + '</td>' +
-      			'<td class="yRegDisplayPCB">' + this.pcb.yReg + '</td>' +
-      			'<td class="zFlagDisplayPCB">' + this.pcb.zFlag + '</td>' +
+      	return '<tr data-id="proc' + this.pcb.Pid + '" data-state="' + this.state +'">' +
+      			'<td class="pidDisplayPCB">' + this.pcb.Pid + '</td>' +
+      			'<td class="pcDisplayPCB">' + this.pcb.PC + '</td>' +
+      			'<td class="accDisplayPCB">' + this.pcb.Acc + '</td>' +
+      			'<td class="xRegDisplayPCB">' + this.pcb.Xreg + '</td>' +
+      			'<td class="yRegDisplayPCB">' + this.pcb.Yreg + '</td>' +
+      			'<td class="zFlagDisplayPCB">' + this.pcb.Zflag + '</td>' +
       			'<td class="">' + this.priority + '</td>'+
       			'<td class="processStateDisplay">' + this.stateIntToString(this.state) + '</td></tr>';
       };
 
       public stateIntToString(stateInt): string {
       	var state = parseInt(stateInt);
-      	if (state === this.NEW) {
+      	if (state === NEW) {
       		return "New";
-      	} else if (state === this.READY) {
+      	} else if (state === READY) {
       		return "Ready";
-      	} else if (state === this.RUNNING) {
+      	} else if (state === RUNNING) {
       		return "Running";
-      	} else if (state === this.WAITING) {
+      	} else if (state === WAITING) {
       		return "Waiting";
-      	} else if (state === this.TERMINATED) {
+      	} else if (state === TERMINATED) {
       		return "Terminated";
       	}
       	return "Invalid State Code";
+      };
+
+      public updatePcbWithCpu(): void {
+      	this.pcb.PC = _CPU.PC;
+      	this.pcb.Acc = _CPU.Acc;
+      	this.pcb.Xreg = _CPU.Xreg;
+      	this.pcb.Yreg = _CPU.Yreg;
+      	this.pcb.Zflag = _CPU.Zflag;
       };
     }
   }
