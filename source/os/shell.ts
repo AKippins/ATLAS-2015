@@ -121,7 +121,31 @@ module TSOS {
             //run
             sc = new ShellCommand(this.shellRun,
                                   "run",
-                                  "<Integer> - Run a program that has been loaded");
+                                  "<Integer> - Run a program that has been loaded.");
+                                  this.commandList[this.commandList.length] = sc;
+
+            //runall
+            sc = new ShellCommand(this.shellRunAll,
+                                  "runall",
+                                  "<Integer> - Run all programs that have been loaded.");
+                                  this.commandList[this.commandList.length] = sc;
+
+            //clearmem
+            sc = new ShellCommand(this.shellClearMem,
+                                  "clearmem",
+                                  "- Clears the memory held in RAM.");
+                                  this.commandList[this.commandList.length] = sc;
+
+            //quantum
+            sc = new ShellCommand(this.shellQuantum,
+                                  "quantum",
+                                  "<Integer> - Sets the quantum for round robin scheduling.");
+                                  this.commandList[this.commandList.length] = sc;
+
+            //ps
+            sc = new ShellCommand(this.shellPS,
+                                  "ps",
+                                  "- Shows all running processes.");
                                   this.commandList[this.commandList.length] = sc;
 
             // ps  - list the running processes and their IDs
@@ -347,12 +371,40 @@ module TSOS {
         }
 
         public shellRun(args) {
-          if (args[0] > PID){
+          if (!_ResidentList[args[0]]){
+            _StdOut.putText("There is no program with that PID sorry.");
             return
           }
-          var loadedProcess = _MemoryManager.storedProcesses[args[0]]
-          _CPU.PC = loadedProcess.base;
-          _CPU.isExecuting = true;
+          var loadedProcess = _ResidentList[args[0]]
+          _ReadyQueue.push(loadedProcess);
+          //loadedProcess.printToScreen();
+          if (_CPU.isExecuting) {
+            if (_CpuScheduler.determineNeedToContextSwitch()) {
+              _CpuScheduler.contextSwitch();
+            }
+          } else {
+            _CpuScheduler.start();
+          }
+          //_CPU.PC = loadedProcess.pcb.base;
+          //_CPU.limit = loadedProcess.pcb.limit;
+          //_CPU.isExecuting = true;
+        }
+
+        public shellRunAll(){
+          for (var i = 0; i < _ResidentList.length; i++) {
+    			  var loadedProcess = _ResidentList[i];
+      			if (loadedProcess && loadedProcess.state !== TERMINATED) {
+      				_ReadyQueue.push(loadedProcess);
+              if (_CPU.isExecuting) {
+        				if (_CpuScheduler.determineNeedToContextSwitch()) {
+        					_CpuScheduler.contextSwitch();
+        				}
+        			} else {
+        				_CpuScheduler.start();
+        			}
+      				//_ResidentList[i].printToScreen();
+    			  }
+    		  }
         }
 
         public shellStatus(args) {
@@ -412,10 +464,15 @@ module TSOS {
             _StdOut.putText("Current input is valid.");
             if (load){
               var code = taInput.value.replace(/\s/g, '');
-              console.log(PID);
               _Console.advanceLine();
-              _StdOut.putText("The current program has the PID: " + PID);
-              _MemoryManager.load(code);
+              if (_Memory.base < 768){
+                _StdOut.putText("The current program has the PID: " + PID);
+                _MemoryManager.load(code);
+                _Memory.update();
+              } else {
+              _StdOut.putText("There currently isn't enough avaliable memory. Please clear the memory.");
+              return;
+              }
             }
           } else {
             _StdOut.putText("No input detected.");
@@ -424,6 +481,64 @@ module TSOS {
 
         public shellBSOD(args) {
             _Kernel.krnTrapError(args[0]);
+        }
+
+        public shellClearMem(args) {
+          _Memory.clearMem();
+          _Memory.update();
+          _StdOut.putText("Memory has been cleared.");
+        }
+
+        public shellQuantum(args) {
+            QUANTUM = args[0];
+        }
+
+        public shellPS(args){
+          var result = "";
+      		for (var i = 0; i < _ReadyQueue.length; i++) {
+      			var processRunning = _ReadyQueue[i];
+      			if (processRunning.state !== TERMINATED) {
+      				result += ("PID: " + processRunning.pcb.pid + ", ");
+      			}
+      		}
+      		if (_CurrentProcess !== null) {
+      			result += ("PID: " + _CurrentProcess.pcb.pid);
+      		}
+      		if (result.length) {
+      			_StdIn.putText(result);
+      		} else {
+      			_StdIn.putText("There are no currently running processes.");
+      		}
+        }
+
+        public shellKill(args){
+          if (args.length > 0) {
+      			var Pid = parseInt(args[0]);
+      			var foundProcess = null;
+      			if (_CurrentProcess && _CurrentProcess.pcb.pid === Pid) {
+      				foundProcess = _CurrentProcess;
+      				_CurrentProcess.state = TERMINATED;
+      				_CurrentProcess.printToScreen();
+      				_Kernel.krnTrace("Killed active process with PID " + Pid);
+      				_CpuScheduler.contextSwitch();
+      			} else {
+      				for (var i = 0; i < _ReadyQueue.length; i++) {
+      					if (_ReadyQueue[i].pcb.pid === Pid) {
+      						foundProcess = _ReadyQueue[i];
+      						_ReadyQueue[i].state = TERMINATED;
+      						_ReadyQueue[i].printToScreen();
+      						_ReadyQueue.splice(i, 1);
+      						_Kernel.krnTrace("Killed queued process with PID " + Pid);
+      						break;
+      					}
+      				}
+      			}
+      			if (foundProcess === null) {
+      				_StdIn.putText("Usage: kill <pid>  Please supply a valid PID.");
+      			}
+      		} else {
+      			_StdIn.putText("Usage: kill <pid>  Please supply a PID.");
+      		}
         }
     }
 }

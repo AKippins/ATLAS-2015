@@ -45,6 +45,9 @@ module TSOS {
             //
             // ... more?
             //
+            _CpuScheduler = new CpuScheduler();
+          	_ResidentList = new Array();
+          	_ReadyQueue = new Array();
 
             // Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)
             this.krnTrace("Enabling the interrupts.");
@@ -88,12 +91,19 @@ module TSOS {
                 var interrupt = _KernelInterruptQueue.dequeue();
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed. {
-                _CPU.cycle();
+                this.determineSchedulingChoice();
             } else {                      // If there are no interrupts and there is nothing being executed then just be idle. {
                 this.krnTrace("Idle");
             }
         }
 
+        public determineSchedulingChoice(){
+          if (_CpuScheduler.determineNeedToContextSwitch()) {
+            _CpuScheduler.contextSwitch();
+            }
+            _CPU.cycle();
+            //_CurrentProcess.printToScreen();
+        }
 
         //
         // Interrupt Handling

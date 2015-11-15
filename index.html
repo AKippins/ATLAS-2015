@@ -13,6 +13,8 @@
    <!-- Globals CONSTANTS and _Variables. Must included be first. -->
    <script type="text/javascript" src="distrib/globals.js"></script>
 
+   <script type="text/javascript" src="distrib/vendor/jquery-1.11.3.min.js"></script>
+
    <!-- Host (Virtual Machine / Hardware Simulation) Routines -->
    <script type="text/javascript" src="distrib/host/control.js"></script>
    <script type="text/javascript" src="distrib/host/devices.js"></script>
@@ -32,11 +34,13 @@
    <script type="text/javascript" src="distrib/os/kernel.js"></script>
    <script type="text/javascript" src="distrib/os/memoryManager.js"></script>
    <script type="text/javascript" src="distrib/os/pcb.js"></script>
+   <script type="text/javascript" src="distrib/os/processState.js"></script>
+   <script type="text/javascript" src="distrib/os/CpuScheduler.js"></script>
 
    <!-- Other Routines -->
    <script type="text/javascript" src="distrib/utils.js"></script>
    <!-- Uncomment this line below to enable GLaDOS testing -->
-   <script type="text/javascript" src="http://www.labouseur.com/courses/os/projects/glados.js"></script>
+   <!--<script type="text/javascript" src="http://www.labouseur.com/courses/os/projects/glados.js"></script>-->
 </head>
 
 <body onload="onDocumentLoad()">
@@ -57,9 +61,22 @@
     					<li><a href="#" id="btnStartOS" name="brnStartOS" value="Start" tabindex="0" onclick="TSOS.Control.hostBtnStartOS_click(this);" style="color:white">Start</a></li>
     					<li><a href="#" id="btnHaltOS" name="brnHaltOS" value="Halt" tabindex="1" onclick="TSOS.Control.hostBtnHaltOS_click(this);" style="color:white">Halt</a></li>
     					<li><a href="#" id="btnReset" name="brnReset" value="Reset" tabindex="2" onclick="TSOS.Control.hostBtnReset_click(this)" style="color:white">Reset</a></li>
-              <li><a href="#" id="btnSingleStep" name="brnSingleStep" value="Single Step Mode" tabindex="3" onclick="TSOS.Control.hostBtnSingleStep_click(this)" style="color:white">Single Step Mode</a></li>
-              <li><a href="#" id="btnStep" name="brnStep" value="Step" class="disabled" tabindex="4" onclick="TSOS.Control.hostBtnStep_click(this)" style="color:white">Step</a></li>
     				</ul>
+          <div class="navbar-form navbar-right">
+            <div class="form-group">
+            <input class="form-control text-center"
+                   name ="taDateDisplay"
+                   id   ="taDateDisplay"
+                   style="width:255px"
+            ></input>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-block" href="#" id="btnSingleStep" name="brnSingleStep" value="Single Step Mode" tabindex="3" onclick="TSOS.Control.hostBtnSingleStep_click(this)">Single Step Mode</button>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-block" href="#" id="btnStep" name="brnStep" value="Step" disabled tabindex="4" onclick="TSOS.Control.hostBtnStep_click(this)">Step</button>
+          </div>
+          </div>
     			</div>
     		</div>
     	</div>
@@ -68,19 +85,24 @@
 			<div class="row" id="divMain">
 				<div class="col-md-6">
     			<div class="col-md-12">
-           <div id="divConsole">
-             <label>Console</label>
+           <label>Console</label>
               <canvas id="display"
-                      width="500px"
+                      width="523px"
                       height="500px"
                       tabindex="3"
-                      style="border:1px solid">
+                      style="border: 1px solid #bdc3c7; border-radius: 6px; overflow:auto;">
               </canvas>
-           </div>
 
-           <div id="cpuDisplay">
+              <div class="row">
+                <div class="col-md-4">
+                  <label>User Program Input</label>
+                  <textarea class="form-control" name="taProgramInput" id="taProgramInput" rows="3"></textarea>
+                  <br>
+                </div>
+                <div class="col-md-8">
         		<label>CPU</label>
-        				<table class="table table-bordered">
+            <div class="panel panel-default" style="border: 1px solid #bdc3c7; border-radius: 6px;">
+                <table class="table">
         					<thead>
         						<tr>
         							<th>PC</th>
@@ -93,64 +115,72 @@
         					</thead>
         					<tbody>
         						<tr>
-        							<td id="pcDisplay"></td>
-                      <td id="irDisplay"></td>
-        							<td id="accDisplay"></td>
-        							<td id="xRegDisplay"></td>
-        							<td id="yRegDisplay"></td>
-        							<td id="zFlagDisplay"></td>
+        							<td id="pcDisplay">N/A</td>
+                      <td id="irDisplay">N/A</td>
+        							<td id="accDisplay">N/A</td>
+        							<td id="xRegDisplay">N/A</td>
+        							<td id="yRegDisplay">N/A</td>
+        							<td id="zFlagDisplay">N/A</td>
         						</tr>
         					</tbody>
         				</table>
-        			</div>
+              </div>
     		</div>
+
+      </div>
+    </div>
       </div>
         <div class="col-md-6">
 					<div id="divStatuses">
 						<div class="row">
               <div class="col-md-12">
-               <div id="divLog">
-                  <label>
-                     Host Log
-                     <br>
-                     <textarea name ="taDateDisplay"
-                               id   ="taDateDisplay"
-                               rows ="1"
-                               cols ="50"
-                     ></textarea>
-                     <br>
-                     <textarea name="taStatusDisplay"
-                               id  ="taStatusDisplay"
-                               rows="1"
-                               cols="50"
-                               value="Started and operational."
-                     ></textarea>
-                     <br>
-                     <textarea name="taHostLog"
-                               id  ="taHostLog"
-                               rows="5"
-                               cols="50"
-                     ></textarea>
-                  </label>
-               </div>
+                  <label>Status</label>
+                  <input class="form-control" name="taStatusDisplay" id="taStatusDisplay" value="Started and operational."></input>
+                  <br>
 
-               <div id="divUserProgramInput">
-                  <label>
-                     User Program Input
-                     <br>
-                     <textarea name="taProgramInput"
-                               id  ="taProgramInput"
-                               rows="8"
-                               cols="50"
-                     ></textarea>
-                  </label>
-               </div>
-               <div class="tab-pane fade in active" id="divMemoryWrapper">
-											<table id="divMemory" class="table table-bordered memory-display-div">
-                        <thead>
-                        </thead>
-											</table>
-							</div>
+                  <label>Host Log</label>
+                  <textarea class="form-control" name="taHostLog" id="taHostLog" rows="3"></textarea>
+                  <br>
+
+                  <label>Processes</label>
+                  <div class="panel panel-default" style="border: 1px solid #bdc3c7; border-radius: 6px;">
+                      <table class="table">
+              					<thead>
+              						<tr>
+                            <th>PID</th>
+                            <th>PC</th>
+                            <th>IR</th>
+              							<th>Acc</th>
+              							<th>X-Reg</th>
+              							<th>Y-Reg</th>
+              							<th>Z-Reg</th>
+                            <th>State</th>
+              						</tr>
+              					</thead>
+              					<tbody id="divPCB">
+              						<!--<tr>
+                            <td id="pidDisplayPCB">N/A</td>
+              							<td id="pcDisplayPCB">N/A</td>
+                            <td id="irDisplayPCB">N/A</td>
+              							<td id="accDisplayPCB">N/A</td>
+              							<td id="xRegDisplayPCB">N/A</td>
+              							<td id="yRegDisplayPCB">N/A</td>
+              							<td id="zFlagDisplayPCB">N/A</td>
+                            <td id="">N/A</td>
+              						</tr>-->
+              					</tbody>
+              				</table>
+                    </div>
+
+                <label>Memory</label>
+                <br>
+                <div class="panel panel-body panel-default" style="border: 1px solid #bdc3c7; border-radius: 6px; height:270px; overflow:auto">
+                  <table class="table table-condensed">
+										<tbody id="divMemory">
+										</tbody>
+									</table>
+								</div>
+
              </div>
             </div>
           </div>

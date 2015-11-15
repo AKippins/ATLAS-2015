@@ -20,7 +20,7 @@ const TIMER_IRQ: number = 0;  // Pages 23 (timer), 9 (interrupts), and 561 (inte
                               // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
 const KEYBOARD_IRQ: number = 1;
 
-const MAIN_MEMORY: number = 256;
+const MAIN_MEMORY: number = 768;
 
 
 
@@ -29,6 +29,10 @@ const MAIN_MEMORY: number = 256;
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
 //
 var _CPU: TSOS.Cpu;  // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
+
+var _PCB: TSOS.Pcb;
+
+var _Control: TSOS.Control;
 
 var _Shell: TSOS.Shell;
 
@@ -46,6 +50,17 @@ var _OSclock: number = 0;  // Page 23.
 
 var _Mode: number = 0;     // (currently unused)  0 = Kernel Mode, 1 = User Mode.  See page 21.
 
+// Define some constants for the possible states
+var NEW: number = 0;
+var READY: number = 1;
+var RUNNING: number = 2;
+var WAITING: number = 3;
+var TERMINATED: number = 4;
+
+var QUANTUM = 6;
+var _CycleCounter = 0;
+
+
 var _Canvas: HTMLCanvasElement;         // Initialized in Control.hostInit().
 var _DrawingContext: any; // = _Canvas.getContext("2d");  // Assigned here for type safety, but re-initialized in Control.hostInit() for OCD and logic.
 var _DefaultFontFamily: string = "sans";        // Ignored, I think. The was just a place-holder in 2008, but the HTML canvas may have use for it.
@@ -59,6 +74,12 @@ var _Kernel: TSOS.Kernel;
 var _KernelInterruptQueue;          // Initializing this to null (which I would normally do) would then require us to specify the 'any' type, as below.
 var _KernelInputQueue: any = null;  // Is this better? I don't like uninitialized variables. But I also don't like using the type specifier 'any'
 var _KernelBuffers: any[] = null;   // when clearly 'any' is not what we want. There is likely a better way, but what is it?
+var _ReadyQueue = null;
+var _ResidentList = null;
+
+var _CpuScheduler = null;
+
+var _CurrentProcess = null;
 
 // Standard input and output
 var _StdIn;    // Same "to null or not to null" issue as above.

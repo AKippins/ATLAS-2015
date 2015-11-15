@@ -39,6 +39,9 @@ var TSOS;
             //
             // ... more?
             //
+            _CpuScheduler = new TSOS.CpuScheduler();
+            _ResidentList = new Array();
+            _ReadyQueue = new Array();
             // Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)
             this.krnTrace("Enabling the interrupts.");
             this.krnEnableInterrupts();
@@ -76,11 +79,18 @@ var TSOS;
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             }
             else if (_CPU.isExecuting) {
-                _CPU.cycle();
+                this.determineSchedulingChoice();
             }
             else {
                 this.krnTrace("Idle");
             }
+        };
+        Kernel.prototype.determineSchedulingChoice = function () {
+            if (_CpuScheduler.determineNeedToContextSwitch()) {
+                _CpuScheduler.contextSwitch();
+            }
+            _CPU.cycle();
+            //_CurrentProcess.printToScreen();
         };
         //
         // Interrupt Handling

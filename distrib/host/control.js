@@ -69,7 +69,13 @@ var TSOS;
             var dateTime = displayDate + " " + displayTime;
             // Update the log console.
             var taLog = document.getElementById("taHostLog");
-            taLog.value = str + taLog.value;
+            var lastMsg = taLog.value.substr(0, taLog.value.indexOf("\n"));
+            if (lastMsg.indexOf("msg:Idle") > 0) {
+                taLog.value = taLog.value.replace(lastMsg + "\n", str);
+            }
+            else {
+                taLog.value = str + taLog.value;
+            }
             // Update the Date & Time in the console.
             var taDate = document.getElementById("taDateDisplay");
             taDate.value = dateTime;
@@ -88,10 +94,12 @@ var TSOS;
             document.getElementById("display").focus();
             // ... Create and initialize the CPU (because it's part of the hardware)  ...
             _CPU = new TSOS.Cpu(); // Note: We could simulate multi-core systems by instantiating more than one instance of the CPU here.
-            _CPU.init(); //       There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
+            // There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
             _Memory = new TSOS.Memory();
+            this.initilizeMem();
             _Memory.init();
             _MemoryManager = new TSOS.MemoryManager();
+            //_MemoryManager.printToScreen();
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(TSOS.Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
             // .. and call the OS Kernel Bootstrap routine.
@@ -116,10 +124,32 @@ var TSOS;
         };
         Control.hostBtnSingleStep_click = function (btn) {
             _SingleStep = !_SingleStep;
+            if (_SingleStep == true) {
+                document.getElementById("btnSingleStep").style.backgroundColor = "#8CC152";
+                document.getElementById("btnStep").style.backgroundColor = "#8CC152";
+                document.getElementById("btnStep").disabled = false;
+            }
+            else if (_SingleStep == false) {
+                document.getElementById("btnSingleStep").style.backgroundColor = "#AAB2BD";
+                document.getElementById("btnStep").style.backgroundColor = "#AAB2BD";
+                document.getElementById("btnStep").disabled = true;
+            }
         };
         Control.hostBtnStep_click = function (btn) {
             if (_SingleStep) {
                 _CPU.isExecuting = true;
+            }
+        };
+        Control.initilizeMem = function () {
+            var nextRow = "";
+            for (var i = 0, len = _Memory.memory.length; i < len; i++) {
+                // Initiate UI
+                if (i % 8 === 0) {
+                    nextRow += "</tr>";
+                    document.getElementById("divMemory").innerHTML += nextRow;
+                    nextRow = "<tr><td>0x" + i.toString(16) + "</td>";
+                }
+                nextRow += "<td id='mem" + i + "'>00</td>";
             }
         };
         return Control;

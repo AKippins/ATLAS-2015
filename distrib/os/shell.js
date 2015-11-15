@@ -71,7 +71,19 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellBSOD, "bsod", "- Only causes death and destruction man. Don't do it. Really... Don't do it please.");
             this.commandList[this.commandList.length] = sc;
             //run
-            sc = new TSOS.ShellCommand(this.shellRun, "run", "<Integer> - Run a program that has been loaded");
+            sc = new TSOS.ShellCommand(this.shellRun, "run", "<Integer> - Run a program that has been loaded.");
+            this.commandList[this.commandList.length] = sc;
+            //runall
+            sc = new TSOS.ShellCommand(this.shellRunAll, "runall", "<Integer> - Run all programs that have been loaded.");
+            this.commandList[this.commandList.length] = sc;
+            //clearmem
+            sc = new TSOS.ShellCommand(this.shellClearMem, "clearmem", "- Clears the memory held in RAM.");
+            this.commandList[this.commandList.length] = sc;
+            //quantum
+            sc = new TSOS.ShellCommand(this.shellQuantum, "quantum", "<Integer> - Sets the quantum for round robin scheduling.");
+            this.commandList[this.commandList.length] = sc;
+            //ps
+            sc = new TSOS.ShellCommand(this.shellPS, "ps", "- Shows all running processes.");
             this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -282,12 +294,40 @@ var TSOS;
             _StdOut.putText("I'm gonna burn your house down with the lemons.");
         };
         Shell.prototype.shellRun = function (args) {
-            if (args[0] > PID) {
+            if (!_ResidentList[args[0]]) {
+                _StdOut.putText("There is no program with that PID sorry.");
                 return;
             }
-            var loadedProcess = _MemoryManager.storedProcesses[args[0]];
-            _CPU.PC = loadedProcess.base;
-            _CPU.isExecuting = true;
+            var loadedProcess = _ResidentList[args[0]];
+            _ReadyQueue.push(loadedProcess);
+            //loadedProcess.printToScreen();
+            if (_CPU.isExecuting) {
+                if (_CpuScheduler.determineNeedToContextSwitch()) {
+                    _CpuScheduler.contextSwitch();
+                }
+            }
+            else {
+                _CpuScheduler.start();
+            }
+            //_CPU.PC = loadedProcess.pcb.base;
+            //_CPU.limit = loadedProcess.pcb.limit;
+            //_CPU.isExecuting = true;
+        };
+        Shell.prototype.shellRunAll = function () {
+            for (var i = 0; i < _ResidentList.length; i++) {
+                var loadedProcess = _ResidentList[i];
+                if (loadedProcess && loadedProcess.state !== TERMINATED) {
+                    _ReadyQueue.push(loadedProcess);
+                    if (_CPU.isExecuting) {
+                        if (_CpuScheduler.determineNeedToContextSwitch()) {
+                            _CpuScheduler.contextSwitch();
+                        }
+                    }
+                    else {
+                        _CpuScheduler.start();
+                    }
+                }
+            }
         };
         Shell.prototype.shellStatus = function (args) {
             var string = "";
@@ -346,10 +386,16 @@ var TSOS;
                 _StdOut.putText("Current input is valid.");
                 if (load) {
                     var code = taInput.value.replace(/\s/g, '');
-                    console.log(PID);
                     _Console.advanceLine();
-                    _StdOut.putText("The current program has the PID: " + PID);
-                    _MemoryManager.load(code);
+                    if (_Memory.base < 768) {
+                        _StdOut.putText("The current program has the PID: " + PID);
+                        _MemoryManager.load(code);
+                        _Memory.update();
+                    }
+                    else {
+                        _StdOut.putText("There currently isn't enough avaliable memory. Please clear the memory.");
+                        return;
+                    }
                 }
             }
             else {
@@ -358,6 +404,63 @@ var TSOS;
         };
         Shell.prototype.shellBSOD = function (args) {
             _Kernel.krnTrapError(args[0]);
+        };
+        Shell.prototype.shellClearMem = function (args) {
+            _Memory.clearMem();
+            _Memory.update();
+            _StdOut.putText("Memory has been cleared.");
+        };
+        Shell.prototype.shellQuantum = function (args) {
+            QUANTUM = args[0];
+        };
+        Shell.prototype.shellPS = function (args) {
+            var result = "";
+            for (var i = 0; i < _ReadyQueue.length; i++) {
+                var processRunning = _ReadyQueue[i];
+                if (processRunning.state !== TERMINATED) {
+                    result += ("PID: " + processRunning.pcb.pid + ", ");
+                }
+            }
+            if (_CurrentProcess !== null) {
+                result += ("PID: " + _CurrentProcess.pcb.pid);
+            }
+            if (result.length) {
+                _StdIn.putText(result);
+            }
+            else {
+                _StdIn.putText("There are no currently running processes.");
+            }
+        };
+        Shell.prototype.shellKill = function (args) {
+            if (args.length > 0) {
+                var Pid = parseInt(args[0]);
+                var foundProcess = null;
+                if (_CurrentProcess && _CurrentProcess.pcb.pid === Pid) {
+                    foundProcess = _CurrentProcess;
+                    _CurrentProcess.state = TERMINATED;
+                    _CurrentProcess.printToScreen();
+                    _Kernel.krnTrace("Killed active process with PID " + Pid);
+                    _CpuScheduler.contextSwitch();
+                }
+                else {
+                    for (var i = 0; i < _ReadyQueue.length; i++) {
+                        if (_ReadyQueue[i].pcb.pid === Pid) {
+                            foundProcess = _ReadyQueue[i];
+                            _ReadyQueue[i].state = TERMINATED;
+                            _ReadyQueue[i].printToScreen();
+                            _ReadyQueue.splice(i, 1);
+                            _Kernel.krnTrace("Killed queued process with PID " + Pid);
+                            break;
+                        }
+                    }
+                }
+                if (foundProcess === null) {
+                    _StdIn.putText("Usage: kill <pid>  Please supply a valid PID.");
+                }
+            }
+            else {
+                _StdIn.putText("Usage: kill <pid>  Please supply a PID.");
+            }
         };
         return Shell;
     })();
