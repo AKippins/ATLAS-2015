@@ -142,6 +142,12 @@ module TSOS {
                                   "<Integer> - Sets the quantum for round robin scheduling.");
                                   this.commandList[this.commandList.length] = sc;
 
+            //ps
+            sc = new ShellCommand(this.shellPS,
+                                  "ps",
+                                  "- Shows all running processes.");
+                                  this.commandList[this.commandList.length] = sc;
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -485,6 +491,54 @@ module TSOS {
 
         public shellQuantum(args) {
             QUANTUM = args[0];
+        }
+
+        public shellPS(args){
+          var result = "";
+      		for (var i = 0; i < _ReadyQueue.length; i++) {
+      			var processRunning = _ReadyQueue[i];
+      			if (processRunning.state !== TERMINATED) {
+      				result += ("PID: " + processRunning.pcb.pid + ", ");
+      			}
+      		}
+      		if (_CurrentProcess !== null) {
+      			result += ("PID: " + _CurrentProcess.pcb.pid);
+      		}
+      		if (result.length) {
+      			_StdIn.putText(result);
+      		} else {
+      			_StdIn.putText("There are no currently running processes.");
+      		}
+        }
+
+        public shellKill(args){
+          if (args.length > 0) {
+      			var Pid = parseInt(args[0]);
+      			var foundProcess = null;
+      			if (_CurrentProcess && _CurrentProcess.pcb.pid === Pid) {
+      				foundProcess = _CurrentProcess;
+      				_CurrentProcess.state = TERMINATED;
+      				_CurrentProcess.printToScreen();
+      				_Kernel.krnTrace("Killed active process with PID " + Pid);
+      				_CpuScheduler.contextSwitch();
+      			} else {
+      				for (var i = 0; i < _ReadyQueue.length; i++) {
+      					if (_ReadyQueue[i].pcb.pid === Pid) {
+      						foundProcess = _ReadyQueue[i];
+      						_ReadyQueue[i].state = TERMINATED;
+      						_ReadyQueue[i].printToScreen();
+      						_ReadyQueue.splice(i, 1);
+      						_Kernel.krnTrace("Killed queued process with PID " + Pid);
+      						break;
+      					}
+      				}
+      			}
+      			if (foundProcess === null) {
+      				_StdIn.putText("Usage: kill <pid>  Please supply a valid PID.");
+      			}
+      		} else {
+      			_StdIn.putText("Usage: kill <pid>  Please supply a PID.");
+      		}
         }
     }
 }
