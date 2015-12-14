@@ -27,7 +27,7 @@ module TSOS {
 
       public contextSwitch(): void {
       	var nextProcess = this.determineNextProcess();
-      	if (nextProcess !== null && nextProcess !== undefined) {
+      	if (nextProcess != null && nextProcess != undefined) {
       		if (this.scheduler === this.schedulingOptions[0]) {
       			this.handleRoundRobinContextSwitch();
       		}
@@ -39,6 +39,9 @@ module TSOS {
       		_CurrentProcess = nextProcess;
       		// This program is now in the running state
       		_CurrentProcess.state = RUNNING;
+          if (_CurrentProcess.pcb.PC < _CurrentProcess.pcb.base){
+            _CurrentProcess.pcb.PC = _CurrentProcess.pcb.base;
+          }
       		// Initialize the CPU and set isExecuting to true only if
       		// step is not currently enabled.
       		var shouldBeExecuting = !_SingleStep;
@@ -62,7 +65,7 @@ module TSOS {
       		// Put the ProcessState back on the ready queue
       		_ReadyQueue.push(_CurrentProcess);
       	} else if (_CurrentProcess.state === TERMINATED) {
-      		//_MemoryManager.removeFromResidentList(_CurrentProcess.pcb.pid); //
+      		_MemoryManager.remFromResident(_CurrentProcess.pcb.pid); //
       	}
       };
 
@@ -85,6 +88,8 @@ module TSOS {
       	_CurrentProcess = null;
       	// Reset the cycle counter
       	_CycleCounter = 0;
+        _Console.advanceLine();
+        _OsShell.putPrompt();
       };
     }
   }

@@ -9,10 +9,12 @@ module TSOS {
                   public Xreg: number = 0,
                   public Yreg: number = 0,
                   public Zflag: number = 0,
+                  public instruction: string = "",
                   //dont think that i need this
                   public isExecuting: boolean = false,
                   public base: number = 0,
-                  public limit: number = 0
+                  public limit: number = 0,
+                  public location: number = null
                 ){}
 
       public init(): void{

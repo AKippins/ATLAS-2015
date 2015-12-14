@@ -20,7 +20,11 @@ const TIMER_IRQ: number = 0;  // Pages 23 (timer), 9 (interrupts), and 561 (inte
                               // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
 const KEYBOARD_IRQ: number = 1;
 
-const MAIN_MEMORY: number = 768;
+const NUM_OF_PROG: number = 3;
+
+const PROGRAM_SIZE: number = 256;
+
+const MAIN_MEMORY: number = NUM_OF_PROG * PROGRAM_SIZE;
 
 
 
@@ -56,6 +60,11 @@ var READY: number = 1;
 var RUNNING: number = 2;
 var WAITING: number = 3;
 var TERMINATED: number = 4;
+
+var INMEMORY: number = 0;
+var INFILESYSTEM: number = 1;
+// A default priority value for processes
+var DEFAULTPRIORITY: number = 10;
 
 var QUANTUM = 6;
 var _CycleCounter = 0;

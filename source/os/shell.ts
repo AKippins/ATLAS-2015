@@ -148,6 +148,12 @@ module TSOS {
                                   "- Shows all running processes.");
                                   this.commandList[this.commandList.length] = sc;
 
+            //kill
+            sc = new ShellCommand(this.shellKill,
+                                  "kill",
+                                  "- Kill a running processes.");
+                                  this.commandList[this.commandList.length] = sc;
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -393,7 +399,9 @@ module TSOS {
         public shellRunAll(){
           for (var i = 0; i < _ResidentList.length; i++) {
     			  var loadedProcess = _ResidentList[i];
-      			if (loadedProcess && loadedProcess.state !== TERMINATED) {
+            console.log(_ResidentList);
+            console.log(loadedProcess);
+      			if (loadedProcess && loadedProcess.state != TERMINATED) {
       				_ReadyQueue.push(loadedProcess);
               if (_CPU.isExecuting) {
         				if (_CpuScheduler.determineNeedToContextSwitch()) {
@@ -424,9 +432,26 @@ module TSOS {
 
         public shellLoad(args) {
           var taInput = <HTMLInputElement> document.getElementById("taProgramInput");
-          var load = false;
+          if (taInput.value.match(/^[0-9A-F]/i)){
+            _StdIn.putText("Current input is valid. Please wait.");
+      			_StdIn.advanceLine();
+      			// Use the default priority
+      			var priority = DEFAULTPRIORITY;
+      			if (args.length >= 1) {
+      				// If the priroity argument is passed, parse that and use it
+      				priority = parseInt(args[0]);
+      			}
+      			var Pid = _MemoryManager.load(taInput.value, priority);
+      			if (Pid !== null) {
+      				_StdIn.putText("The current program has the PID: " + Pid);
+      			}
+      			//_MemoryManager.printToScreen();
+      		} else {
+      			_StdIn.putText("That input is invalid, Only Hex is allowed.");
+      		}
+          //var load = false;
 
-          if (taInput.value.length > 0) {
+          /*if (taInput.value.length > 0) {
             for (var count = 0; count !== taInput.value.length; count++) {
                 switch (taInput.value[count]){
                   case "0"://valid do nothing;
@@ -476,7 +501,7 @@ module TSOS {
             }
           } else {
             _StdOut.putText("No input detected.");
-          }
+          }*/
         }
 
         public shellBSOD(args) {
@@ -484,25 +509,32 @@ module TSOS {
         }
 
         public shellClearMem(args) {
-          _Memory.clearMem();
-          _Memory.update();
-          _StdOut.putText("Memory has been cleared.");
+          if (args[0] == 0 || args[0] == 1 || args[0] == 2){
+            _MemoryManager.clearMem(args[0]);
+            _StdOut.putText("Virtual Memory location " + args[0] + " has been cleared.");
+          } else {
+          _MemoryManager.clearMem("all");
+          //_MemoryManager.update();
+          _StdOut.putText("All Virtual Memory has been cleared.");
+          }
         }
 
         public shellQuantum(args) {
             QUANTUM = args[0];
+            _StdOut.putText("Quantum has been changed to " + QUANTUM + ".");
         }
 
         public shellPS(args){
           var result = "";
-      		for (var i = 0; i < _ReadyQueue.length; i++) {
-      			var processRunning = _ReadyQueue[i];
-      			if (processRunning.state !== TERMINATED) {
-      				result += ("PID: " + processRunning.pcb.pid + ", ");
+          console.log(_ResidentList);
+          console.log(_ResidentList[0].pcb.Pid);
+      		for (var i = 0; i < _ResidentList.length; i++) {
+      			if (_ResidentList.state != TERMINATED) {
+      				result += ("PID: " + _ResidentList[i].pcb.Pid + ", ");
       			}
       		}
-      		if (_CurrentProcess !== null) {
-      			result += ("PID: " + _CurrentProcess.pcb.pid);
+      		if (_CurrentProcess != null) {
+      			result += ("PID: " + _CurrentProcess.pcb.Pid);
       		}
       		if (result.length) {
       			_StdIn.putText(result);

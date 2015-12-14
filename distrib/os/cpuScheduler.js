@@ -27,7 +27,7 @@ var TSOS;
         };
         CpuScheduler.prototype.contextSwitch = function () {
             var nextProcess = this.determineNextProcess();
-            if (nextProcess !== null && nextProcess !== undefined) {
+            if (nextProcess != null && nextProcess != undefined) {
                 if (this.scheduler === this.schedulingOptions[0]) {
                     this.handleRoundRobinContextSwitch();
                 }
@@ -39,6 +39,9 @@ var TSOS;
                 _CurrentProcess = nextProcess;
                 // This program is now in the running state
                 _CurrentProcess.state = RUNNING;
+                if (_CurrentProcess.pcb.PC < _CurrentProcess.pcb.base) {
+                    _CurrentProcess.pcb.PC = _CurrentProcess.pcb.base;
+                }
                 // Initialize the CPU and set isExecuting to true only if
                 // step is not currently enabled.
                 var shouldBeExecuting = !_SingleStep;
@@ -64,6 +67,7 @@ var TSOS;
                 _ReadyQueue.push(_CurrentProcess);
             }
             else if (_CurrentProcess.state === TERMINATED) {
+                _MemoryManager.remFromResident(_CurrentProcess.pcb.pid); //
             }
         };
         ;
@@ -87,6 +91,8 @@ var TSOS;
             _CurrentProcess = null;
             // Reset the cycle counter
             _CycleCounter = 0;
+            _Console.advanceLine();
+            _OsShell.putPrompt();
         };
         ;
         return CpuScheduler;

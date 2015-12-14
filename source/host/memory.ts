@@ -9,13 +9,15 @@ module TSOS {
       ){}
 
       public init(): void {
-        for (var x = 0; x < this.bytes; x++){
+        //console.log("Blat");
+        for (var x = 0; x <= this.bytes; x++){
           this.memory[x] = "00";
         }
+        //console.log(MAIN_MEMORY);
+        //console.log(this.memory[767]);
         this.base = 0;
-
         var nextRow = "";
-        for (var i = 0, len = this.memory.length; i < len; i++) {
+        for (var i = 0, len = this.bytes; i <= len; i++) {
             // Initiate UI
             if (i % 8 === 0) {
                 nextRow += "</tr>";
@@ -30,27 +32,5 @@ module TSOS {
             nextRow += "<td id='mem" + i + "'>00</td>";
         }
       }
-
-      public update(): void{
-        for (var i = 0, len = this.memory.length; i < len; i++) {
-          var memId = "mem" + i;
-          if (_Memory[i] == undefined) {
-            //document.getElementById(memId).innerHTML = "00";
-          } else {
-            if (_Memory[i].length < 2){
-              _Memory[i] = '0' + _Memory[i]
-            }
-            document.getElementById(memId).innerHTML = _Memory[i];
-          }
-        }
-      }
-
-      public clearMem(): void{
-        for (var x = 0; x < this.bytes; x++){
-          this.memory[x] = "00";
-        }
-        this.base = 0;
-      }
-
     }
   }

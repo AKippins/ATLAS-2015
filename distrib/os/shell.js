@@ -85,6 +85,9 @@ var TSOS;
             //ps
             sc = new TSOS.ShellCommand(this.shellPS, "ps", "- Shows all running processes.");
             this.commandList[this.commandList.length] = sc;
+            //kill
+            sc = new TSOS.ShellCommand(this.shellKill, "kill", "- Kill a running processes.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             //
@@ -316,7 +319,9 @@ var TSOS;
         Shell.prototype.shellRunAll = function () {
             for (var i = 0; i < _ResidentList.length; i++) {
                 var loadedProcess = _ResidentList[i];
-                if (loadedProcess && loadedProcess.state !== TERMINATED) {
+                console.log(_ResidentList);
+                console.log(loadedProcess);
+                if (loadedProcess && loadedProcess.state != TERMINATED) {
                     _ReadyQueue.push(loadedProcess);
                     if (_CPU.isExecuting) {
                         if (_CpuScheduler.determineNeedToContextSwitch()) {
@@ -346,83 +351,105 @@ var TSOS;
         };
         Shell.prototype.shellLoad = function (args) {
             var taInput = document.getElementById("taProgramInput");
-            var load = false;
-            if (taInput.value.length > 0) {
-                for (var count = 0; count !== taInput.value.length; count++) {
-                    switch (taInput.value[count]) {
-                        case "0": //valid do nothing;
-                        case "1": //valid do nothing;
-                        case "2": //valid do nothing;
-                        case "3": //valid do nothing;
-                        case "4": //valid do nothing;
-                        case "5": //valid do nothing;
-                        case "6": //valid do nothing;
-                        case "7": //valid do nothing;
-                        case "8": //valid do nothing;
-                        case "9": //valid do nothing;
-                        case "a": //valid do nothing;
-                        case "A": //valid do nothing;
-                        case "b": //valid do nothing;
-                        case "B": //valid do nothing;
-                        case "c": //valid do nothing;
-                        case "C": //valid do nothing;
-                        case "d": //valid do nothing;
-                        case "D": //valid do nothing;
-                        case "e": //valid do nothing;
-                        case "E": //valid do nothing;
-                        case "f": //valid do nothing;
-                        case "F": //valid do nothing;
-                        case " ":
-                            load = true;
-                            break;
-                        default:
-                            _StdOut.putText("That input is invalid, Only Hex is allowed. Char: " + taInput.value[count] + " ");
-                            load = false;
-                            console.log("That input is invalid, Only Hex is allowed.");
-                            console.log("I need to see this " + taInput.value[count]);
-                            break;
-                    }
+            if (taInput.value.match(/^[0-9A-F]/i)) {
+                _StdIn.putText("Current input is valid. Please wait.");
+                _StdIn.advanceLine();
+                // Use the default priority
+                var priority = DEFAULTPRIORITY;
+                if (args.length >= 1) {
+                    // If the priroity argument is passed, parse that and use it
+                    priority = parseInt(args[0]);
                 }
-                _StdOut.putText("Current input is valid.");
-                if (load) {
-                    var code = taInput.value.replace(/\s/g, '');
-                    _Console.advanceLine();
-                    if (_Memory.base < 768) {
-                        _StdOut.putText("The current program has the PID: " + PID);
-                        _MemoryManager.load(code);
-                        _Memory.update();
-                    }
-                    else {
-                        _StdOut.putText("There currently isn't enough avaliable memory. Please clear the memory.");
-                        return;
-                    }
+                var Pid = _MemoryManager.load(taInput.value, priority);
+                if (Pid !== null) {
+                    _StdIn.putText("The current program has the PID: " + Pid);
                 }
             }
             else {
-                _StdOut.putText("No input detected.");
+                _StdIn.putText("That input is invalid, Only Hex is allowed.");
             }
+            //var load = false;
+            /*if (taInput.value.length > 0) {
+              for (var count = 0; count !== taInput.value.length; count++) {
+                  switch (taInput.value[count]){
+                    case "0"://valid do nothing;
+                    case "1"://valid do nothing;
+                    case "2"://valid do nothing;
+                    case "3"://valid do nothing;
+                    case "4"://valid do nothing;
+                    case "5"://valid do nothing;
+                    case "6"://valid do nothing;
+                    case "7"://valid do nothing;
+                    case "8"://valid do nothing;
+                    case "9"://valid do nothing;
+                    case "a"://valid do nothing;
+                    case "A"://valid do nothing;
+                    case "b"://valid do nothing;
+                    case "B"://valid do nothing;
+                    case "c"://valid do nothing;
+                    case "C"://valid do nothing;
+                    case "d"://valid do nothing;
+                    case "D"://valid do nothing;
+                    case "e"://valid do nothing;
+                    case "E"://valid do nothing;
+                    case "f"://valid do nothing;
+                    case "F"://valid do nothing;
+                    case " "://valid do nothing;
+                             load = true;
+                      break;
+                    default: _StdOut.putText("That input is invalid, Only Hex is allowed. Char: " + taInput.value[count] + " ");
+                             load = false;
+                             console.log("That input is invalid, Only Hex is allowed.");
+                             console.log("I need to see this " + taInput.value[count]);
+                      break;
+                  }
+                }
+              _StdOut.putText("Current input is valid.");
+              if (load){
+                var code = taInput.value.replace(/\s/g, '');
+                _Console.advanceLine();
+                if (_Memory.base < 768){
+                  _StdOut.putText("The current program has the PID: " + PID);
+                  _MemoryManager.load(code);
+                  _Memory.update();
+                } else {
+                _StdOut.putText("There currently isn't enough avaliable memory. Please clear the memory.");
+                return;
+                }
+              }
+            } else {
+              _StdOut.putText("No input detected.");
+            }*/
         };
         Shell.prototype.shellBSOD = function (args) {
             _Kernel.krnTrapError(args[0]);
         };
         Shell.prototype.shellClearMem = function (args) {
-            _Memory.clearMem();
-            _Memory.update();
-            _StdOut.putText("Memory has been cleared.");
+            if (args[0] == 0 || args[0] == 1 || args[0] == 2) {
+                _MemoryManager.clearMem(args[0]);
+                _StdOut.putText("Virtual Memory location " + args[0] + " has been cleared.");
+            }
+            else {
+                _MemoryManager.clearMem("all");
+                //_MemoryManager.update();
+                _StdOut.putText("All Virtual Memory has been cleared.");
+            }
         };
         Shell.prototype.shellQuantum = function (args) {
             QUANTUM = args[0];
+            _StdOut.putText("Quantum has been changed to " + QUANTUM + ".");
         };
         Shell.prototype.shellPS = function (args) {
             var result = "";
-            for (var i = 0; i < _ReadyQueue.length; i++) {
-                var processRunning = _ReadyQueue[i];
-                if (processRunning.state !== TERMINATED) {
-                    result += ("PID: " + processRunning.pcb.pid + ", ");
+            console.log(_ResidentList);
+            console.log(_ResidentList[0].pcb.Pid);
+            for (var i = 0; i < _ResidentList.length; i++) {
+                if (_ResidentList.state != TERMINATED) {
+                    result += ("PID: " + _ResidentList[i].pcb.Pid + ", ");
                 }
             }
-            if (_CurrentProcess !== null) {
-                result += ("PID: " + _CurrentProcess.pcb.pid);
+            if (_CurrentProcess != null) {
+                result += ("PID: " + _CurrentProcess.pcb.Pid);
             }
             if (result.length) {
                 _StdIn.putText(result);
