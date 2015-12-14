@@ -154,6 +154,47 @@ module TSOS {
                                   "- Kill a running processes.");
                                   this.commandList[this.commandList.length] = sc;
 
+            //create
+            sc = new ShellCommand(this.shellCreate,
+                                  "create",
+                                  "- Creates a file with the given name.");
+                                  this.commandList[this.commandList.length] = sc;
+            //read
+            sc = new ShellCommand(this.shellRead,
+                                  "read",
+                                  "- Reads a file with the given name.");
+                                  this.commandList[this.commandList.length] = sc;
+            //write
+            sc = new ShellCommand(this.shellWrite,
+                                  "write",
+                                  "- Writes to the file with the given name.");
+                                  this.commandList[this.commandList.length] = sc;
+            //delete
+            sc = new ShellCommand(this.shellDelete,
+                                  "delete",
+                                  "- Deletes the file with the given name.");
+                                  this.commandList[this.commandList.length] = sc;
+            //format
+            sc = new ShellCommand(this.shellFormat,
+                                  "format",
+                                  "- Kill a running processes.");
+                                  this.commandList[this.commandList.length] = sc;
+
+            //ls
+            sc = new ShellCommand(this.shellLS,
+                                  "kill",
+                                  "- Lists the files stored on the disk.");
+                                  this.commandList[this.commandList.length] = sc;
+            //getschedule
+            sc = new ShellCommand(this.shellGS,
+                                  "kill",
+                                  "- Returns the currently selected scheduling system.");
+                                  this.commandList[this.commandList.length] = sc;
+            //setschedule
+            sc = new ShellCommand(this.shellSS,
+                                  "kill",
+                                  "- Set the CPU scheduling algorithm.");
+                                  this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 

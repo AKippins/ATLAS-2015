@@ -88,6 +88,30 @@ var TSOS;
             //kill
             sc = new TSOS.ShellCommand(this.shellKill, "kill", "- Kill a running processes.");
             this.commandList[this.commandList.length] = sc;
+            //create
+            sc = new TSOS.ShellCommand(this.shellCreate, "create", "- Creates a file with the given name.");
+            this.commandList[this.commandList.length] = sc;
+            //read
+            sc = new TSOS.ShellCommand(this.shellRead, "read", "- Reads a file with the given name.");
+            this.commandList[this.commandList.length] = sc;
+            //write
+            sc = new TSOS.ShellCommand(this.shellWrite, "write", "- Writes to the file with the given name.");
+            this.commandList[this.commandList.length] = sc;
+            //delete
+            sc = new TSOS.ShellCommand(this.shellDelete, "delete", "- Deletes the file with the given name.");
+            this.commandList[this.commandList.length] = sc;
+            //format
+            sc = new TSOS.ShellCommand(this.shellFormat, "format", "- Kill a running processes.");
+            this.commandList[this.commandList.length] = sc;
+            //ls
+            sc = new TSOS.ShellCommand(this.shellLS, "kill", "- Lists the files stored on the disk.");
+            this.commandList[this.commandList.length] = sc;
+            //getschedule
+            sc = new TSOS.ShellCommand(this.shellGS, "kill", "- Returns the currently selected scheduling system.");
+            this.commandList[this.commandList.length] = sc;
+            //setschedule
+            sc = new TSOS.ShellCommand(this.shellSS, "kill", "- Set the CPU scheduling algorithm.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             //

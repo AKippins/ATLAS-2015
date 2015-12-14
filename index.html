@@ -40,7 +40,7 @@
    <!-- Other Routines -->
    <script type="text/javascript" src="distrib/utils.js"></script>
    <!-- Uncomment this line below to enable GLaDOS testing -->
-   <!--<script type="text/javascript" src="http://www.labouseur.com/courses/os/projects/glados.js"></script>-->
+   <script type="text/javascript" src="http://www.labouseur.com/courses/os/projects/glados.js"></script>
 </head>
 
 <body onload="onDocumentLoad()">
@@ -127,7 +127,17 @@
               </div>
     		</div>
 
+        <div class="col-md-12">
+
+        <label>Hard Drive</label>
+        <div class="panel panel-body panel-default" style="border: 1px solid #bdc3c7; border-radius: 6px; height:100px; overflow:auto">
+          <table class="table table-condensed">
+            <tbody id="divHDD">
+            </tbody>
+          </table>
+        </div>
       </div>
+    </div>
     </div>
       </div>
         <div class="col-md-6">
@@ -143,7 +153,7 @@
                   <br>
 
                   <label>Processes</label>
-                  <div class="panel panel-default" style="border: 1px solid #bdc3c7; border-radius: 6px;">
+                  <div class="panel panel-default" style="border: 1px solid #bdc3c7; border-radius: 6px; height:150px; overflow:auto;">
                       <table class="table">
               					<thead>
               						<tr>
@@ -176,7 +186,7 @@
 
                 <label>Memory</label>
                 <br>
-                <div class="panel panel-body panel-default" style="border: 1px solid #bdc3c7; border-radius: 6px; height:270px; overflow:auto">
+                <div class="panel panel-body panel-default" style="border: 1px solid #bdc3c7; border-radius: 6px; height:357px; overflow:auto">
                   <table class="table table-condensed">
 										<tbody id="divMemory">
 										</tbody>
