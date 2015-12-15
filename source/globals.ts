@@ -104,6 +104,9 @@ var _SarcasticMode: boolean = false;
 // Global Device Driver Objects - page 12
 var _krnKeyboardDriver; //  = null;
 
+// Global Device Driver Objects - page 12
+var _fileSystemDriver; //  = null;
+
 var _hardwareClockID: number = null;
 
 // For testing (and enrichment)...

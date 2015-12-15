@@ -32,14 +32,7 @@ var TSOS;
             console.log(programLocation);
             // Create a new PCB
             var thisPcb = new TSOS.Pcb();
-            // Set the base and limit of the program in the PCB
-            // To determine base, we will add 1 to the programLocation to handle the
-            // 0-indexed nature of arrays, multiply it by the program size, then subtract
-            // the program size.
             thisPcb.base = ((programLocation + 1) * PROGRAM_SIZE) - PROGRAM_SIZE;
-            // To determine limit, we will add 1 to the programLocation to handle the
-            // 0-indexed nature of arrays, multiply it by the program size, then subtract
-            // 1 to handle the 0-indexed nature of arrays.
             thisPcb.limit = ((programLocation + 1) * PROGRAM_SIZE) - 1;
             thisPcb.location = programLocation;
             // Make a new ProcessState instance and put it on the ResidentList
@@ -107,20 +100,11 @@ var TSOS;
             var memId = "mem" + address;
             //document.getElementById(memId).className = "active";
             return this.memory.memory[address];
-            //address = address + _CurrentProcess.pcb.base
-            /*if (address >= _CurrentProgram.pcb.limit ||
-              address < _CurrentProgram.pcb.base) {
-              _KernelInterruptQueue.enqueue(new Interrupt(MEMORY_ACCESS_VIOLATION_IRQ, {address : address}));
-            }*/
-            //return this.memory.memory[address];
         };
         MemoryManager.prototype.writeToMem = function (address, data) {
             address = address + _CurrentProcess.pcb.base;
-            /*if (data.length < 2) {
-              data = ('00' + data).slice(-2);
-            }*/
             this.memory.memory[address] = data.toUpperCase();
-            //_Memory.update();
+            this.update();
         };
         MemoryManager.prototype.translateBytes = function (hex) {
             return parseInt(hex, 16);

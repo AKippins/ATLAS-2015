@@ -613,5 +613,99 @@ module TSOS {
       			_StdIn.putText("Usage: kill <pid>  Please supply a PID.");
       		}
         }
+
+        public shellCreate(args) {
+          if (args.length > 0) {
+            var result = _fileSystemDriver.createFile(args[0]);
+            _StdIn.putText(result.message);
+          } else {
+            _StdIn.putText("Usage: create <name> - Please supply a file name");
+          }
+        }
+        public shellRead(args) {
+          if (args.length > 0) {
+            var result = _fileSystemDriver.readFile(args[0]);
+            if (result.status === 'success') {
+              _StdIn.putText(result.data);
+            } else {
+              _StdIn.putText(result.message);
+            }
+          } else {
+            _StdIn.putText("Usage: read <name> - Please supply a file name");
+          }
+        }
+        public shellWrite(args) {
+          if (args.length > 0) {
+            var data = "";
+            for (var i = 1; i < args.length; i++) {
+              // We want to add a space in between each argument, but only if
+              // we are at an arg that is not the first one, since we don't
+              // want to start the string with a space.
+              if (i > 1) {
+                data += " " + args[i];
+              } else {
+                data += args[i];
+              }
+            }
+            var result = _fileSystemDriver.writeFile(args[0], data);
+            _StdIn.putText(result.message);
+          } else {
+            _StdIn.putText("Usage: write <name> <data> - Please supply a file name and data");
+          }
+        }
+        public shellDelete(args) {
+          if (args.length > 0) {
+      			var result = _fileSystemDriver.deleteFile(args[0], true);
+      			_StdIn.putText(result.message);
+      		} else {
+      			_StdIn.putText("Usage: delete <name> - Please supply a file name");
+      		}
+        }
+        public shellFormat(args) {
+          var successfulFormat = _fileSystemDriver.format();
+            if (successfulFormat) {
+              _StdIn.putText("Successfully formatted the filesystem.");
+            } else {
+              _StdIn.putText("Error while formatting filesystem.");
+            }
+        }
+        public shellLS(args) {
+          var result = _fileSystemDriver.listDirectory();
+          if (result.status === 'success') {
+            if (result.data.length) {
+              for (var i = 0; i < result.data.length; i++) {
+                _StdIn.putText(result.data[i].key + " : " + result.data[i].name);
+                _StdIn.advanceLine();
+              }
+            } else {
+              _StdIn.putText('No files currently stored on file system.');
+            }
+          } else {
+            _StdIn.putText(result.message);
+          }
+        }
+        public shellGS(args) {
+            _StdIn.putText(_CpuScheduler.scheduler);
+        }
+        public shellSS(args) {
+          if (args.length > 0) {
+            // Ensure that the given argument is in the possible scheduling possibilities
+            var schedulerIndex = -1;
+            for (var i = 0; i < _CpuScheduler.schedulingOptions.length; i++) {
+              if (args[0] === _CpuScheduler.schedulingOptions[i]) {
+                schedulerIndex = i;
+              }
+            }
+            if (schedulerIndex === -1){
+              _StdIn.putText("Usage: Please supply a valid scheduler");
+            } else {
+              _CpuScheduler.scheduler = _CpuScheduler.schedulingOptions[schedulerIndex];
+              _StdIn.putText("Set CPU scheduling algorithm to " +
+                _CpuScheduler.schedulingOptions[schedulerIndex]);
+            }
+          } else {
+            _StdIn.putText("Usage: Please supply a scheduler");
+          }
+        }
     }
 }
