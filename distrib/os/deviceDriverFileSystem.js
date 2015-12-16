@@ -11,29 +11,22 @@ var TSOS;
     // Extends DeviceDriver
     var DeviceDriverFileSystem = (function (_super) {
         __extends(DeviceDriverFileSystem, _super);
-        function DeviceDriverFileSystem(tracks, sectors, blocks, bytes, metaSize) {
-            if (tracks === void 0) { tracks = 4; }
-            if (sectors === void 0) { sectors = 8; }
-            if (blocks === void 0) { blocks = 8; }
-            if (bytes === void 0) { bytes = 64; }
-            if (metaSize === void 0) { metaSize = 4; }
-            _super.call(this, this.krnFileSystemDriverEntry, this.krnFileSystemISR);
-            this.tracks = tracks;
-            this.sectors = sectors;
-            this.blocks = blocks;
-            this.bytes = bytes;
-            this.metaSize = metaSize;
+        function DeviceDriverFileSystem() {
             // Override the base method pointers.
+            _super.call(this, this.krnFileSystemDriverEntry, this.krnFileSystemISR);
         }
-        DeviceDriverFileSystem.prototype.init = function () {
-            this.krnFileSystemDriverEntry;
-            this.krnFileSystemISR;
-        };
+        /*public init(){
+          this.krnFileSystemDriverEntry;
+          this.krnFileSystemISR;
+        }*/
         DeviceDriverFileSystem.prototype.krnFileSystemDriverEntry = function () {
             this.status = "loaded";
             this.update();
+            this.format();
         };
         DeviceDriverFileSystem.prototype.krnFileSystemISR = function (params) {
+            var tfw = "tired with salt";
+            return true;
         };
         DeviceDriverFileSystem.prototype.createFile = function (name) {
             var result = {
@@ -172,8 +165,8 @@ var TSOS;
                 result.message = 'Please format the file system and try again.';
                 return result;
             }
-            for (var sector = 0; sector < this.sectors; sector++) {
-                for (var block = 0; block < this.blocks; block++) {
+            for (var sector = 0; sector < SECTORS; sector++) {
+                for (var block = 0; block < BLOCKS; block++) {
                     var thisKey = this.makeKey(0, sector, block);
                     var thisData = this.readData(thisKey);
                     if (this.blockIsActive(thisData)) {
@@ -192,10 +185,10 @@ var TSOS;
                 "data": ""
             };
             if (data !== null) {
-                for (var i = 0; i < this.metaSize; i++) {
+                for (var i = 0; i < META_SIZE; i++) {
                     returnValue.meta += data.charAt(i);
                 }
-                for (var i = this.metaSize; i < data.length; i += 2) {
+                for (var i = META_SIZE; i < data.length; i += 2) {
                     var ascii = parseInt(data.charAt(i) + data.charAt(i + 1), 16);
                     if (ascii !== 0) {
                         returnValue.data += String.fromCharCode(ascii);
@@ -205,11 +198,11 @@ var TSOS;
             return returnValue;
         };
         DeviceDriverFileSystem.prototype.dataSize = function () {
-            return this.bytes - this.metaSize;
+            return BYTES - META_SIZE;
         };
         DeviceDriverFileSystem.prototype.zeroOut = function () {
             var zeroedOut = "";
-            for (var x = 0; x < this.bytes; x++) {
+            for (var x = 0; x < BYTES; x++) {
                 zeroedOut += "0";
             }
             return zeroedOut;
@@ -219,9 +212,9 @@ var TSOS;
                 return false;
             }
             var zeroedOut = this.zeroOut();
-            for (var track = 0; track < this.tracks; track++) {
-                for (var sector = 0; sector < this.sectors; sector++) {
-                    for (var block = 0; block < this.blocks; block++) {
+            for (var track = 0; track < TRACKS; track++) {
+                for (var sector = 0; sector < SECTORS; sector++) {
+                    for (var block = 0; block < BLOCKS; block++) {
                         sessionStorage.setItem(this.makeKey(track, sector, block), zeroedOut);
                     }
                 }
@@ -272,7 +265,7 @@ var TSOS;
             return data;
         };
         DeviceDriverFileSystem.prototype.blockHasAddr = function (metaData) {
-            var link = metaData.substring(1, this.metaSize);
+            var link = metaData.substring(1, META_SIZE);
             if (link !== "" && link !== "---") {
                 return true;
             }
@@ -293,8 +286,8 @@ var TSOS;
             return (data + zeroedOut).slice(0, this.dataSize());
         };
         DeviceDriverFileSystem.prototype.availableAddr = function () {
-            for (var sector = 0; sector < this.sectors; sector++) {
-                for (var block = 0; block < this.blocks; block++) {
+            for (var sector = 0; sector < SECTORS; sector++) {
+                for (var block = 0; block < BLOCKS; block++) {
                     var thisKey = this.makeKey(0, sector, block), thisData = this.readData(thisKey);
                     if (!this.blockIsActive(thisData)) {
                         return thisKey;
@@ -304,8 +297,8 @@ var TSOS;
             return 'na';
         };
         DeviceDriverFileSystem.prototype.findAddr = function (name) {
-            for (var sector = 0; sector < this.sectors; sector++) {
-                for (var block = 0; block < this.blocks; block++) {
+            for (var sector = 0; sector < SECTORS; sector++) {
+                for (var block = 0; block < BLOCKS; block++) {
                     var thisKey = this.makeKey(0, sector, block), thisData = this.readData(thisKey);
                     if (thisData.data === name) {
                         return thisKey;
@@ -315,9 +308,9 @@ var TSOS;
             return 'na';
         };
         DeviceDriverFileSystem.prototype.availableFile = function () {
-            for (var track = 1; track < this.tracks; track++) {
-                for (var sector = 0; sector < this.sectors; sector++) {
-                    for (var block = 0; block < this.blocks; block++) {
+            for (var track = 1; track < TRACKS; track++) {
+                for (var sector = 0; sector < SECTORS; sector++) {
+                    for (var block = 0; block < BLOCKS; block++) {
                         var thisKey = this.makeKey(track, sector, block), thisData = this.readData(thisKey);
                         if (!this.blockIsActive(thisData)) {
                             return thisKey;
@@ -328,9 +321,9 @@ var TSOS;
             return 'na';
         };
         DeviceDriverFileSystem.prototype.fileSystemReady = function () {
-            for (var track = 0; track < this.tracks; track++) {
-                for (var sector = 0; sector < this.sectors; sector++) {
-                    for (var block = 0; block < this.blocks; block++) {
+            for (var track = 0; track < TRACKS; track++) {
+                for (var sector = 0; sector < SECTORS; sector++) {
+                    for (var block = 0; block < BLOCKS; block++) {
                         var thisKey = this.makeKey(track, sector, block), thisData = sessionStorage.getItem(thisKey);
                         if (thisData === null) {
                             return false;
@@ -349,7 +342,7 @@ var TSOS;
         };
         ;
         DeviceDriverFileSystem.prototype.getChainAddress = function (block) {
-            return block.meta.slice(1, this.metaSize);
+            return block.meta.slice(1, META_SIZE);
         };
         ;
         DeviceDriverFileSystem.prototype.supportsHtml5Storage = function () {
@@ -361,12 +354,12 @@ var TSOS;
             }
         };
         DeviceDriverFileSystem.prototype.update = function () {
-            var diskDiv = document.getElementById('divMemory');
+            var diskDiv = document.getElementById('divHDD');
             var output = '<tbody>';
             try {
-                for (var track = 0; track < this.tracks; track++) {
-                    for (var sector = 0; sector < this.sectors; sector++) {
-                        for (var block = 0; block < this.blocks; block++) {
+                for (var track = 0; track < TRACKS; track++) {
+                    for (var sector = 0; sector < SECTORS; sector++) {
+                        for (var block = 0; block < BLOCKS; block++) {
                             var thisKey = this.makeKey(track, sector, block), thisData = sessionStorage.getItem(thisKey);
                             output += '<tr><td>' + thisKey + '</td>' + '<td>' + thisData.substring(0, 4) + '</td>' + '<td>' + thisData.substring(4) + '</td></tr>';
                         }

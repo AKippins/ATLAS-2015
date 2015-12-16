@@ -69,6 +69,12 @@ var DEFAULTPRIORITY: number = 10;
 var QUANTUM = 6;
 var _CycleCounter = 0;
 
+var TRACKS = 4;
+var SECTORS = 8;
+var BLOCKS = 8;
+var BYTES = 64;
+var META_SIZE = 4;
+
 
 var _Canvas: HTMLCanvasElement;         // Initialized in Control.hostInit().
 var _DrawingContext: any; // = _Canvas.getContext("2d");  // Assigned here for type safety, but re-initialized in Control.hostInit() for OCD and logic.
@@ -105,7 +111,7 @@ var _SarcasticMode: boolean = false;
 var _krnKeyboardDriver; //  = null;
 
 // Global Device Driver Objects - page 12
-var _fileSystemDriver; //  = null;
+var _krnFileSystemDriver; //  = null;
 
 var _hardwareClockID: number = null;
 

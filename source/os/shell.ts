@@ -177,22 +177,22 @@ module TSOS {
             //format
             sc = new ShellCommand(this.shellFormat,
                                   "format",
-                                  "- Kill a running processes.");
+                                  "- Format the HDD.");
                                   this.commandList[this.commandList.length] = sc;
 
             //ls
             sc = new ShellCommand(this.shellLS,
-                                  "kill",
+                                  "ls",
                                   "- Lists the files stored on the disk.");
                                   this.commandList[this.commandList.length] = sc;
             //getschedule
             sc = new ShellCommand(this.shellGS,
-                                  "kill",
+                                  "getschedule",
                                   "- Returns the currently selected scheduling system.");
                                   this.commandList[this.commandList.length] = sc;
             //setschedule
             sc = new ShellCommand(this.shellSS,
-                                  "kill",
+                                  "setschedule",
                                   "- Set the CPU scheduling algorithm.");
                                   this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
@@ -616,7 +616,7 @@ module TSOS {
 
         public shellCreate(args) {
           if (args.length > 0) {
-            var result = _fileSystemDriver.createFile(args[0]);
+            var result = _krnFileSystemDriver.createFile(args[0]);
             _StdIn.putText(result.message);
           } else {
             _StdIn.putText("Usage: create <name> - Please supply a file name");
@@ -624,7 +624,7 @@ module TSOS {
         }
         public shellRead(args) {
           if (args.length > 0) {
-            var result = _fileSystemDriver.readFile(args[0]);
+            var result = _krnFileSystemDriver.readFile(args[0]);
             if (result.status === 'success') {
               _StdIn.putText(result.data);
             } else {
@@ -647,7 +647,7 @@ module TSOS {
                 data += args[i];
               }
             }
-            var result = _fileSystemDriver.writeFile(args[0], data);
+            var result = _krnFileSystemDriver.writeFile(args[0], data);
             _StdIn.putText(result.message);
           } else {
             _StdIn.putText("Usage: write <name> <data> - Please supply a file name and data");
@@ -655,14 +655,14 @@ module TSOS {
         }
         public shellDelete(args) {
           if (args.length > 0) {
-      			var result = _fileSystemDriver.deleteFile(args[0], true);
+      			var result = _krnFileSystemDriver.deleteFile(args[0], true);
       			_StdIn.putText(result.message);
       		} else {
       			_StdIn.putText("Usage: delete <name> - Please supply a file name");
       		}
         }
         public shellFormat(args) {
-          var successfulFormat = _fileSystemDriver.format();
+          var successfulFormat = _krnFileSystemDriver.format();
             if (successfulFormat) {
               _StdIn.putText("Successfully formatted the filesystem.");
             } else {
@@ -670,7 +670,7 @@ module TSOS {
             }
         }
         public shellLS(args) {
-          var result = _fileSystemDriver.listDirectory();
+          var result = _krnFileSystemDriver.listDirectory();
           if (result.status === 'success') {
             if (result.data.length) {
               for (var i = 0; i < result.data.length; i++) {

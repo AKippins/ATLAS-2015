@@ -46,6 +46,11 @@ var INFILESYSTEM = 1;
 var DEFAULTPRIORITY = 10;
 var QUANTUM = 6;
 var _CycleCounter = 0;
+var TRACKS = 4;
+var SECTORS = 8;
+var BLOCKS = 8;
+var BYTES = 64;
+var META_SIZE = 4;
 var _Canvas; // Initialized in Control.hostInit().
 var _DrawingContext; // = _Canvas.getContext("2d");  // Assigned here for type safety, but re-initialized in Control.hostInit() for OCD and logic.
 var _DefaultFontFamily = "sans"; // Ignored, I think. The was just a place-holder in 2008, but the HTML canvas may have use for it.
@@ -72,7 +77,7 @@ var _SarcasticMode = false;
 // Global Device Driver Objects - page 12
 var _krnKeyboardDriver; //  = null;
 // Global Device Driver Objects - page 12
-var _fileSystemDriver; //  = null;
+var _krnFileSystemDriver; //  = null;
 var _hardwareClockID = null;
 // For testing (and enrichment)...
 var Glados = null; // This is the function Glados() in glados.js on Labouseur.com.

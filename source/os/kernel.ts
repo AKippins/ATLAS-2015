@@ -44,10 +44,10 @@ module TSOS {
 
             // Load the Keyboard Device Driver
             this.krnTrace("Loading the file system device driver.");
-            _fileSystemDriver = new DeviceDriverFileSystem();     // Construct it.
-            _fileSystemDriver.init();
-            _fileSystemDriver.driverEntry();                    // Call the driverEntry() initialization routine.
-            this.krnTrace(_fileSystemDriver.status);
+            _krnFileSystemDriver = new DeviceDriverFileSystem();    // Construct it.
+            _krnFileSystemDriver.driverEntry();                     // Call the driverEntry() initialization routine.
+            this.krnTrace(_krnFileSystemDriver.status);
+            //_fileSystemDriver.init();
 
             //
             // ... more?
