@@ -123,7 +123,8 @@ var TSOS;
                     break;
                 default:
                     console.log("Don't know what to do with this, I'm gonna brake now... " + instruction);
-                    this.isExecuting = false;
+                    _CurrentProcess.state = TERMINATED;
+                    _CpuScheduler.contextSwitch();
                     break;
             }
         };
@@ -185,7 +186,7 @@ var TSOS;
             _CurrentProcess.pcb.Yreg = this.Yreg;
             _CurrentProcess.pcb.Zflag = this.Zflag;
             _CurrentProcess.state = TERMINATED;
-            _MemoryManager.locations[_CurrentProcess.pcb.location].active = false;
+            //_MemoryManager.locations[_CurrentProcess.pcb.location].active = false;
             _CpuScheduler.contextSwitch();
             //_MemoryManager.clearMem();
         };
