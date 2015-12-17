@@ -73,6 +73,12 @@ var TSOS;
             this.pcb.Xreg = _CPU.Xreg;
             this.pcb.Yreg = _CPU.Yreg;
             this.pcb.Zflag = _CPU.Zflag;
+            this.pcb.instruction = _CPU.instruction;
+            this.pcb.limit = _CPU.limit;
+        };
+        ;
+        ProcessState.prototype.processSwapName = function () {
+            return 'swap' + this.pcb.Pid;
         };
         ;
         return ProcessState;

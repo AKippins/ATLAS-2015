@@ -148,6 +148,53 @@ module TSOS {
                                   "- Shows all running processes.");
                                   this.commandList[this.commandList.length] = sc;
 
+            //kill
+            sc = new ShellCommand(this.shellKill,
+                                  "kill",
+                                  "- Kill a running processes.");
+                                  this.commandList[this.commandList.length] = sc;
+
+            //create
+            sc = new ShellCommand(this.shellCreate,
+                                  "create",
+                                  "- Creates a file with the given name.");
+                                  this.commandList[this.commandList.length] = sc;
+            //read
+            sc = new ShellCommand(this.shellRead,
+                                  "read",
+                                  "- Reads a file with the given name.");
+                                  this.commandList[this.commandList.length] = sc;
+            //write
+            sc = new ShellCommand(this.shellWrite,
+                                  "write",
+                                  "- Writes to the file with the given name.");
+                                  this.commandList[this.commandList.length] = sc;
+            //delete
+            sc = new ShellCommand(this.shellDelete,
+                                  "delete",
+                                  "- Deletes the file with the given name.");
+                                  this.commandList[this.commandList.length] = sc;
+            //format
+            sc = new ShellCommand(this.shellFormat,
+                                  "format",
+                                  "- Format the HDD.");
+                                  this.commandList[this.commandList.length] = sc;
+
+            //ls
+            sc = new ShellCommand(this.shellLS,
+                                  "ls",
+                                  "- Lists the files stored on the disk.");
+                                  this.commandList[this.commandList.length] = sc;
+            //getschedule
+            sc = new ShellCommand(this.shellGS,
+                                  "getschedule",
+                                  "- Returns the currently selected scheduling system.");
+                                  this.commandList[this.commandList.length] = sc;
+            //setschedule
+            sc = new ShellCommand(this.shellSS,
+                                  "setschedule",
+                                  "- Set the CPU scheduling algorithm.");
+                                  this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -393,17 +440,19 @@ module TSOS {
         public shellRunAll(){
           for (var i = 0; i < _ResidentList.length; i++) {
     			  var loadedProcess = _ResidentList[i];
-      			if (loadedProcess && loadedProcess.state !== TERMINATED) {
+            //console.log(_ResidentList);
+            console.log(loadedProcess);
+      			if (loadedProcess && loadedProcess.state != TERMINATED) {
       				_ReadyQueue.push(loadedProcess);
-              if (_CPU.isExecuting) {
-        				if (_CpuScheduler.determineNeedToContextSwitch()) {
-        					_CpuScheduler.contextSwitch();
-        				}
-        			} else {
-        				_CpuScheduler.start();
-        			}
+            }
+            if (_CPU.isExecuting) {
+      				if (_CpuScheduler.determineNeedToContextSwitch()) {
+      					_CpuScheduler.contextSwitch();
+      				}
+      			} else {
+      				_CpuScheduler.start();
+      			}
       				//_ResidentList[i].printToScreen();
-    			  }
     		  }
         }
 
@@ -424,9 +473,26 @@ module TSOS {
 
         public shellLoad(args) {
           var taInput = <HTMLInputElement> document.getElementById("taProgramInput");
-          var load = false;
+          if (taInput.value.match(/^[0-9A-F]/i)){
+            _StdIn.putText("Current input is valid. Please wait.");
+      			_StdIn.advanceLine();
+      			// Use the default priority
+      			var priority = DEFAULTPRIORITY;
+      			if (args.length >= 1) {
+      				// If the priroity argument is passed, parse that and use it
+      				priority = parseInt(args[0]);
+      			}
+      			var Pid = _MemoryManager.load(taInput.value, priority);
+      			if (Pid !== null) {
+      				_StdIn.putText("The current program has the PID: " + Pid);
+      			}
+      			//_MemoryManager.printToScreen();
+      		} else {
+      			_StdIn.putText("That input is invalid, Only Hex is allowed.");
+      		}
+          //var load = false;
 
-          if (taInput.value.length > 0) {
+          /*if (taInput.value.length > 0) {
             for (var count = 0; count !== taInput.value.length; count++) {
                 switch (taInput.value[count]){
                   case "0"://valid do nothing;
@@ -476,7 +542,7 @@ module TSOS {
             }
           } else {
             _StdOut.putText("No input detected.");
-          }
+          }*/
         }
 
         public shellBSOD(args) {
@@ -484,25 +550,32 @@ module TSOS {
         }
 
         public shellClearMem(args) {
-          _Memory.clearMem();
-          _Memory.update();
-          _StdOut.putText("Memory has been cleared.");
+          if (args[0] == 0 || args[0] == 1 || args[0] == 2){
+            _MemoryManager.clearMem(args[0]);
+            _StdOut.putText("Virtual Memory location " + args[0] + " has been cleared.");
+          } else {
+          _MemoryManager.clearMem("all");
+          //_MemoryManager.update();
+          _StdOut.putText("All Virtual Memory has been cleared.");
+          }
         }
 
         public shellQuantum(args) {
             QUANTUM = args[0];
+            _StdOut.putText("Quantum has been changed to " + QUANTUM + ".");
         }
 
         public shellPS(args){
           var result = "";
-      		for (var i = 0; i < _ReadyQueue.length; i++) {
-      			var processRunning = _ReadyQueue[i];
-      			if (processRunning.state !== TERMINATED) {
-      				result += ("PID: " + processRunning.pcb.pid + ", ");
+          console.log(_ResidentList);
+          console.log(_ResidentList[0].pcb.Pid);
+      		for (var i = 0; i < _ResidentList.length; i++) {
+      			if (_ResidentList.state != TERMINATED) {
+      				result += ("PID: " + _ResidentList[i].pcb.Pid + ", ");
       			}
       		}
-      		if (_CurrentProcess !== null) {
-      			result += ("PID: " + _CurrentProcess.pcb.pid);
+      		if (_CurrentProcess != null) {
+      			result += ("PID: " + _CurrentProcess.pcb.Pid);
       		}
       		if (result.length) {
       			_StdIn.putText(result);
@@ -515,7 +588,7 @@ module TSOS {
           if (args.length > 0) {
       			var Pid = parseInt(args[0]);
       			var foundProcess = null;
-      			if (_CurrentProcess && _CurrentProcess.pcb.pid === Pid) {
+      			if (_CurrentProcess && _CurrentProcess.pcb.Pid === Pid) {
       				foundProcess = _CurrentProcess;
       				_CurrentProcess.state = TERMINATED;
       				_CurrentProcess.printToScreen();
@@ -523,7 +596,7 @@ module TSOS {
       				_CpuScheduler.contextSwitch();
       			} else {
       				for (var i = 0; i < _ReadyQueue.length; i++) {
-      					if (_ReadyQueue[i].pcb.pid === Pid) {
+      					if (_ReadyQueue[i].pcb.Pid === Pid) {
       						foundProcess = _ReadyQueue[i];
       						_ReadyQueue[i].state = TERMINATED;
       						_ReadyQueue[i].printToScreen();
@@ -539,6 +612,100 @@ module TSOS {
       		} else {
       			_StdIn.putText("Usage: kill <pid>  Please supply a PID.");
       		}
+        }
+
+        public shellCreate(args) {
+          if (args.length > 0) {
+            var result = _krnFileSystemDriver.createFile(args[0]);
+            _StdIn.putText(result.message);
+          } else {
+            _StdIn.putText("Usage: create <name> - Please supply a file name");
+          }
+        }
+        public shellRead(args) {
+          if (args.length > 0) {
+            var result = _krnFileSystemDriver.readFile(args[0]);
+            if (result.status === 'success') {
+              _StdIn.putText(result.data);
+            } else {
+              _StdIn.putText(result.message);
+            }
+          } else {
+            _StdIn.putText("Usage: read <name> - Please supply a file name");
+          }
+        }
+        public shellWrite(args) {
+          if (args.length > 0) {
+            var data = "";
+            for (var i = 1; i < args.length; i++) {
+              // We want to add a space in between each argument, but only if
+              // we are at an arg that is not the first one, since we don't
+              // want to start the string with a space.
+              if (i > 1) {
+                data += " " + args[i];
+              } else {
+                data += args[i];
+              }
+            }
+            var result = _krnFileSystemDriver.writeFile(args[0], data);
+            _StdIn.putText(result.message);
+          } else {
+            _StdIn.putText("Usage: write <name> <data> - Please supply a file name and data");
+          }
+        }
+        public shellDelete(args) {
+          if (args.length > 0) {
+      			var result = _krnFileSystemDriver.deleteFile(args[0], true);
+      			_StdIn.putText(result.message);
+      		} else {
+      			_StdIn.putText("Usage: delete <name> - Please supply a file name");
+      		}
+        }
+        public shellFormat(args) {
+          var successfulFormat = _krnFileSystemDriver.format();
+            if (successfulFormat) {
+              _StdIn.putText("Successfully formatted the filesystem.");
+            } else {
+              _StdIn.putText("Error while formatting filesystem.");
+            }
+        }
+        public shellLS(args) {
+          var result = _krnFileSystemDriver.listDirectory();
+          if (result.status === 'success') {
+            if (result.data.length) {
+              for (var i = 0; i < result.data.length; i++) {
+                _StdIn.putText(result.data[i].key + " : " + result.data[i].name);
+                _StdIn.advanceLine();
+              }
+            } else {
+              _StdIn.putText('No files currently stored on file system.');
+            }
+          } else {
+            _StdIn.putText(result.message);
+          }
+        }
+        public shellGS(args) {
+            _StdIn.putText(_CpuScheduler.scheduler);
+        }
+        public shellSS(args) {
+          if (args.length > 0) {
+            // Ensure that the given argument is in the possible scheduling possibilities
+            var schedulerIndex = -1;
+            for (var i = 0; i < _CpuScheduler.schedulingOptions.length; i++) {
+              if (args[0] === _CpuScheduler.schedulingOptions[i]) {
+                schedulerIndex = i;
+              }
+            }
+            if (schedulerIndex === -1){
+              _StdIn.putText("Usage: Please supply a valid scheduler");
+            } else {
+              _CpuScheduler.scheduler = _CpuScheduler.schedulingOptions[schedulerIndex];
+              _StdIn.putText("Set CPU scheduling algorithm to " +
+                _CpuScheduler.schedulingOptions[schedulerIndex]);
+            }
+          } else {
+            _StdIn.putText("Usage: Please supply a scheduler");
+          }
         }
     }
 }

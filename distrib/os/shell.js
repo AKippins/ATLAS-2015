@@ -85,6 +85,33 @@ var TSOS;
             //ps
             sc = new TSOS.ShellCommand(this.shellPS, "ps", "- Shows all running processes.");
             this.commandList[this.commandList.length] = sc;
+            //kill
+            sc = new TSOS.ShellCommand(this.shellKill, "kill", "- Kill a running processes.");
+            this.commandList[this.commandList.length] = sc;
+            //create
+            sc = new TSOS.ShellCommand(this.shellCreate, "create", "- Creates a file with the given name.");
+            this.commandList[this.commandList.length] = sc;
+            //read
+            sc = new TSOS.ShellCommand(this.shellRead, "read", "- Reads a file with the given name.");
+            this.commandList[this.commandList.length] = sc;
+            //write
+            sc = new TSOS.ShellCommand(this.shellWrite, "write", "- Writes to the file with the given name.");
+            this.commandList[this.commandList.length] = sc;
+            //delete
+            sc = new TSOS.ShellCommand(this.shellDelete, "delete", "- Deletes the file with the given name.");
+            this.commandList[this.commandList.length] = sc;
+            //format
+            sc = new TSOS.ShellCommand(this.shellFormat, "format", "- Format the HDD.");
+            this.commandList[this.commandList.length] = sc;
+            //ls
+            sc = new TSOS.ShellCommand(this.shellLS, "ls", "- Lists the files stored on the disk.");
+            this.commandList[this.commandList.length] = sc;
+            //getschedule
+            sc = new TSOS.ShellCommand(this.shellGS, "getschedule", "- Returns the currently selected scheduling system.");
+            this.commandList[this.commandList.length] = sc;
+            //setschedule
+            sc = new TSOS.ShellCommand(this.shellSS, "setschedule", "- Set the CPU scheduling algorithm.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             //
@@ -316,16 +343,18 @@ var TSOS;
         Shell.prototype.shellRunAll = function () {
             for (var i = 0; i < _ResidentList.length; i++) {
                 var loadedProcess = _ResidentList[i];
-                if (loadedProcess && loadedProcess.state !== TERMINATED) {
+                //console.log(_ResidentList);
+                console.log(loadedProcess);
+                if (loadedProcess && loadedProcess.state != TERMINATED) {
                     _ReadyQueue.push(loadedProcess);
-                    if (_CPU.isExecuting) {
-                        if (_CpuScheduler.determineNeedToContextSwitch()) {
-                            _CpuScheduler.contextSwitch();
-                        }
+                }
+                if (_CPU.isExecuting) {
+                    if (_CpuScheduler.determineNeedToContextSwitch()) {
+                        _CpuScheduler.contextSwitch();
                     }
-                    else {
-                        _CpuScheduler.start();
-                    }
+                }
+                else {
+                    _CpuScheduler.start();
                 }
             }
         };
@@ -346,83 +375,105 @@ var TSOS;
         };
         Shell.prototype.shellLoad = function (args) {
             var taInput = document.getElementById("taProgramInput");
-            var load = false;
-            if (taInput.value.length > 0) {
-                for (var count = 0; count !== taInput.value.length; count++) {
-                    switch (taInput.value[count]) {
-                        case "0": //valid do nothing;
-                        case "1": //valid do nothing;
-                        case "2": //valid do nothing;
-                        case "3": //valid do nothing;
-                        case "4": //valid do nothing;
-                        case "5": //valid do nothing;
-                        case "6": //valid do nothing;
-                        case "7": //valid do nothing;
-                        case "8": //valid do nothing;
-                        case "9": //valid do nothing;
-                        case "a": //valid do nothing;
-                        case "A": //valid do nothing;
-                        case "b": //valid do nothing;
-                        case "B": //valid do nothing;
-                        case "c": //valid do nothing;
-                        case "C": //valid do nothing;
-                        case "d": //valid do nothing;
-                        case "D": //valid do nothing;
-                        case "e": //valid do nothing;
-                        case "E": //valid do nothing;
-                        case "f": //valid do nothing;
-                        case "F": //valid do nothing;
-                        case " ":
-                            load = true;
-                            break;
-                        default:
-                            _StdOut.putText("That input is invalid, Only Hex is allowed. Char: " + taInput.value[count] + " ");
-                            load = false;
-                            console.log("That input is invalid, Only Hex is allowed.");
-                            console.log("I need to see this " + taInput.value[count]);
-                            break;
-                    }
+            if (taInput.value.match(/^[0-9A-F]/i)) {
+                _StdIn.putText("Current input is valid. Please wait.");
+                _StdIn.advanceLine();
+                // Use the default priority
+                var priority = DEFAULTPRIORITY;
+                if (args.length >= 1) {
+                    // If the priroity argument is passed, parse that and use it
+                    priority = parseInt(args[0]);
                 }
-                _StdOut.putText("Current input is valid.");
-                if (load) {
-                    var code = taInput.value.replace(/\s/g, '');
-                    _Console.advanceLine();
-                    if (_Memory.base < 768) {
-                        _StdOut.putText("The current program has the PID: " + PID);
-                        _MemoryManager.load(code);
-                        _Memory.update();
-                    }
-                    else {
-                        _StdOut.putText("There currently isn't enough avaliable memory. Please clear the memory.");
-                        return;
-                    }
+                var Pid = _MemoryManager.load(taInput.value, priority);
+                if (Pid !== null) {
+                    _StdIn.putText("The current program has the PID: " + Pid);
                 }
             }
             else {
-                _StdOut.putText("No input detected.");
+                _StdIn.putText("That input is invalid, Only Hex is allowed.");
             }
+            //var load = false;
+            /*if (taInput.value.length > 0) {
+              for (var count = 0; count !== taInput.value.length; count++) {
+                  switch (taInput.value[count]){
+                    case "0"://valid do nothing;
+                    case "1"://valid do nothing;
+                    case "2"://valid do nothing;
+                    case "3"://valid do nothing;
+                    case "4"://valid do nothing;
+                    case "5"://valid do nothing;
+                    case "6"://valid do nothing;
+                    case "7"://valid do nothing;
+                    case "8"://valid do nothing;
+                    case "9"://valid do nothing;
+                    case "a"://valid do nothing;
+                    case "A"://valid do nothing;
+                    case "b"://valid do nothing;
+                    case "B"://valid do nothing;
+                    case "c"://valid do nothing;
+                    case "C"://valid do nothing;
+                    case "d"://valid do nothing;
+                    case "D"://valid do nothing;
+                    case "e"://valid do nothing;
+                    case "E"://valid do nothing;
+                    case "f"://valid do nothing;
+                    case "F"://valid do nothing;
+                    case " "://valid do nothing;
+                             load = true;
+                      break;
+                    default: _StdOut.putText("That input is invalid, Only Hex is allowed. Char: " + taInput.value[count] + " ");
+                             load = false;
+                             console.log("That input is invalid, Only Hex is allowed.");
+                             console.log("I need to see this " + taInput.value[count]);
+                      break;
+                  }
+                }
+              _StdOut.putText("Current input is valid.");
+              if (load){
+                var code = taInput.value.replace(/\s/g, '');
+                _Console.advanceLine();
+                if (_Memory.base < 768){
+                  _StdOut.putText("The current program has the PID: " + PID);
+                  _MemoryManager.load(code);
+                  _Memory.update();
+                } else {
+                _StdOut.putText("There currently isn't enough avaliable memory. Please clear the memory.");
+                return;
+                }
+              }
+            } else {
+              _StdOut.putText("No input detected.");
+            }*/
         };
         Shell.prototype.shellBSOD = function (args) {
             _Kernel.krnTrapError(args[0]);
         };
         Shell.prototype.shellClearMem = function (args) {
-            _Memory.clearMem();
-            _Memory.update();
-            _StdOut.putText("Memory has been cleared.");
+            if (args[0] == 0 || args[0] == 1 || args[0] == 2) {
+                _MemoryManager.clearMem(args[0]);
+                _StdOut.putText("Virtual Memory location " + args[0] + " has been cleared.");
+            }
+            else {
+                _MemoryManager.clearMem("all");
+                //_MemoryManager.update();
+                _StdOut.putText("All Virtual Memory has been cleared.");
+            }
         };
         Shell.prototype.shellQuantum = function (args) {
             QUANTUM = args[0];
+            _StdOut.putText("Quantum has been changed to " + QUANTUM + ".");
         };
         Shell.prototype.shellPS = function (args) {
             var result = "";
-            for (var i = 0; i < _ReadyQueue.length; i++) {
-                var processRunning = _ReadyQueue[i];
-                if (processRunning.state !== TERMINATED) {
-                    result += ("PID: " + processRunning.pcb.pid + ", ");
+            console.log(_ResidentList);
+            console.log(_ResidentList[0].pcb.Pid);
+            for (var i = 0; i < _ResidentList.length; i++) {
+                if (_ResidentList.state != TERMINATED) {
+                    result += ("PID: " + _ResidentList[i].pcb.Pid + ", ");
                 }
             }
-            if (_CurrentProcess !== null) {
-                result += ("PID: " + _CurrentProcess.pcb.pid);
+            if (_CurrentProcess != null) {
+                result += ("PID: " + _CurrentProcess.pcb.Pid);
             }
             if (result.length) {
                 _StdIn.putText(result);
@@ -435,7 +486,7 @@ var TSOS;
             if (args.length > 0) {
                 var Pid = parseInt(args[0]);
                 var foundProcess = null;
-                if (_CurrentProcess && _CurrentProcess.pcb.pid === Pid) {
+                if (_CurrentProcess && _CurrentProcess.pcb.Pid === Pid) {
                     foundProcess = _CurrentProcess;
                     _CurrentProcess.state = TERMINATED;
                     _CurrentProcess.printToScreen();
@@ -444,7 +495,7 @@ var TSOS;
                 }
                 else {
                     for (var i = 0; i < _ReadyQueue.length; i++) {
-                        if (_ReadyQueue[i].pcb.pid === Pid) {
+                        if (_ReadyQueue[i].pcb.Pid === Pid) {
                             foundProcess = _ReadyQueue[i];
                             _ReadyQueue[i].state = TERMINATED;
                             _ReadyQueue[i].printToScreen();
@@ -460,6 +511,110 @@ var TSOS;
             }
             else {
                 _StdIn.putText("Usage: kill <pid>  Please supply a PID.");
+            }
+        };
+        Shell.prototype.shellCreate = function (args) {
+            if (args.length > 0) {
+                var result = _krnFileSystemDriver.createFile(args[0]);
+                _StdIn.putText(result.message);
+            }
+            else {
+                _StdIn.putText("Usage: create <name> - Please supply a file name");
+            }
+        };
+        Shell.prototype.shellRead = function (args) {
+            if (args.length > 0) {
+                var result = _krnFileSystemDriver.readFile(args[0]);
+                if (result.status === 'success') {
+                    _StdIn.putText(result.data);
+                }
+                else {
+                    _StdIn.putText(result.message);
+                }
+            }
+            else {
+                _StdIn.putText("Usage: read <name> - Please supply a file name");
+            }
+        };
+        Shell.prototype.shellWrite = function (args) {
+            if (args.length > 0) {
+                var data = "";
+                for (var i = 1; i < args.length; i++) {
+                    // We want to add a space in between each argument, but only if
+                    // we are at an arg that is not the first one, since we don't
+                    // want to start the string with a space.
+                    if (i > 1) {
+                        data += " " + args[i];
+                    }
+                    else {
+                        data += args[i];
+                    }
+                }
+                var result = _krnFileSystemDriver.writeFile(args[0], data);
+                _StdIn.putText(result.message);
+            }
+            else {
+                _StdIn.putText("Usage: write <name> <data> - Please supply a file name and data");
+            }
+        };
+        Shell.prototype.shellDelete = function (args) {
+            if (args.length > 0) {
+                var result = _krnFileSystemDriver.deleteFile(args[0], true);
+                _StdIn.putText(result.message);
+            }
+            else {
+                _StdIn.putText("Usage: delete <name> - Please supply a file name");
+            }
+        };
+        Shell.prototype.shellFormat = function (args) {
+            var successfulFormat = _krnFileSystemDriver.format();
+            if (successfulFormat) {
+                _StdIn.putText("Successfully formatted the filesystem.");
+            }
+            else {
+                _StdIn.putText("Error while formatting filesystem.");
+            }
+        };
+        Shell.prototype.shellLS = function (args) {
+            var result = _krnFileSystemDriver.listDirectory();
+            if (result.status === 'success') {
+                if (result.data.length) {
+                    for (var i = 0; i < result.data.length; i++) {
+                        _StdIn.putText(result.data[i].key + " : " + result.data[i].name);
+                        _StdIn.advanceLine();
+                    }
+                }
+                else {
+                    _StdIn.putText('No files currently stored on file system.');
+                }
+            }
+            else {
+                _StdIn.putText(result.message);
+            }
+        };
+        Shell.prototype.shellGS = function (args) {
+            _StdIn.putText(_CpuScheduler.scheduler);
+        };
+        Shell.prototype.shellSS = function (args) {
+            if (args.length > 0) {
+                // Ensure that the given argument is in the possible scheduling possibilities
+                var schedulerIndex = -1;
+                for (var i = 0; i < _CpuScheduler.schedulingOptions.length; i++) {
+                    if (args[0] === _CpuScheduler.schedulingOptions[i]) {
+                        schedulerIndex = i;
+                    }
+                }
+                if (schedulerIndex === -1) {
+                    _StdIn.putText("Usage: Please supply a valid scheduler");
+                }
+                else {
+                    _CpuScheduler.scheduler = _CpuScheduler.schedulingOptions[schedulerIndex];
+                    _StdIn.putText("Set CPU scheduling algorithm to " +
+                        _CpuScheduler.schedulingOptions[schedulerIndex]);
+                }
+            }
+            else {
+                _StdIn.putText("Usage: Please supply a scheduler");
             }
         };
         return Shell;

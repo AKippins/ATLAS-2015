@@ -27,6 +27,7 @@
    <script type="text/javascript" src="distrib/os/console.js"></script>
    <script type="text/javascript" src="distrib/os/deviceDriver.js"></script>
    <script type="text/javascript" src="distrib/os/deviceDriverKeyboard.js"></script>
+   <script type="text/javascript" src="distrib/os/DeviceDriverFileSystem.js"></script>
    <script type="text/javascript" src="distrib/os/queue.js"></script>
    <script type="text/javascript" src="distrib/os/shell.js"></script>
    <script type="text/javascript" src="distrib/os/shellCommand.js"></script>
@@ -127,7 +128,17 @@
               </div>
     		</div>
 
+        <div class="col-md-12">
+
+        <label>Hard Drive</label>
+        <div class="panel panel-body panel-default" style="border: 1px solid #bdc3c7; border-radius: 6px; height:100px; overflow:auto">
+          <table class="table table-condensed">
+            <tbody id="divHDD">
+            </tbody>
+          </table>
+        </div>
       </div>
+    </div>
     </div>
       </div>
         <div class="col-md-6">
@@ -143,7 +154,7 @@
                   <br>
 
                   <label>Processes</label>
-                  <div class="panel panel-default" style="border: 1px solid #bdc3c7; border-radius: 6px;">
+                  <div class="panel panel-default" style="border: 1px solid #bdc3c7; border-radius: 6px; height:150px; overflow:auto;">
                       <table class="table">
               					<thead>
               						<tr>
@@ -154,7 +165,9 @@
               							<th>X-Reg</th>
               							<th>Y-Reg</th>
               							<th>Z-Reg</th>
-                            <th>State</th>
+                            <th>Base</th>
+                            <th>Limit</th>
+                            <th>Priority</th>
               						</tr>
               					</thead>
               					<tbody id="divPCB">
@@ -174,7 +187,7 @@
 
                 <label>Memory</label>
                 <br>
-                <div class="panel panel-body panel-default" style="border: 1px solid #bdc3c7; border-radius: 6px; height:270px; overflow:auto">
+                <div class="panel panel-body panel-default" style="border: 1px solid #bdc3c7; border-radius: 6px; height:357px; overflow:auto">
                   <table class="table table-condensed">
 										<tbody id="divMemory">
 										</tbody>

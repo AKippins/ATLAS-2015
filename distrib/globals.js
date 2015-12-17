@@ -16,7 +16,9 @@ var CPU_CLOCK_INTERVAL = 100; // This is in ms (milliseconds) so 1000 = 1 second
 var TIMER_IRQ = 0; // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
 // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
 var KEYBOARD_IRQ = 1;
-var MAIN_MEMORY = 768;
+var NUM_OF_PROG = 3;
+var PROGRAM_SIZE = 256;
+var MAIN_MEMORY = NUM_OF_PROG * PROGRAM_SIZE;
 //
 // Global Variables
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
@@ -38,8 +40,17 @@ var READY = 1;
 var RUNNING = 2;
 var WAITING = 3;
 var TERMINATED = 4;
+var INMEMORY = 0;
+var INFILESYSTEM = 1;
+// A default priority value for processes
+var DEFAULTPRIORITY = 10;
 var QUANTUM = 6;
 var _CycleCounter = 0;
+var TRACKS = 4;
+var SECTORS = 8;
+var BLOCKS = 8;
+var BYTES = 64;
+var META_SIZE = 4;
 var _Canvas; // Initialized in Control.hostInit().
 var _DrawingContext; // = _Canvas.getContext("2d");  // Assigned here for type safety, but re-initialized in Control.hostInit() for OCD and logic.
 var _DefaultFontFamily = "sans"; // Ignored, I think. The was just a place-holder in 2008, but the HTML canvas may have use for it.
@@ -65,6 +76,8 @@ var _OsShell;
 var _SarcasticMode = false;
 // Global Device Driver Objects - page 12
 var _krnKeyboardDriver; //  = null;
+// Global Device Driver Objects - page 12
+var _krnFileSystemDriver; //  = null;
 var _hardwareClockID = null;
 // For testing (and enrichment)...
 var Glados = null; // This is the function Glados() in glados.js on Labouseur.com.

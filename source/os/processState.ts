@@ -66,6 +66,12 @@ module TSOS {
       	this.pcb.Xreg = _CPU.Xreg;
       	this.pcb.Yreg = _CPU.Yreg;
       	this.pcb.Zflag = _CPU.Zflag;
+        this.pcb.instruction = _CPU.instruction;
+        this.pcb.limit = _CPU.limit;
+      };
+
+      public processSwapName() {
+      	return 'swap' + this.pcb.Pid;
       };
     }
   }
