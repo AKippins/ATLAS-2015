@@ -440,19 +440,19 @@ module TSOS {
         public shellRunAll(){
           for (var i = 0; i < _ResidentList.length; i++) {
     			  var loadedProcess = _ResidentList[i];
-            console.log(_ResidentList);
+            //console.log(_ResidentList);
             console.log(loadedProcess);
       			if (loadedProcess && loadedProcess.state != TERMINATED) {
       				_ReadyQueue.push(loadedProcess);
-              if (_CPU.isExecuting) {
-        				if (_CpuScheduler.determineNeedToContextSwitch()) {
-        					_CpuScheduler.contextSwitch();
-        				}
-        			} else {
-        				_CpuScheduler.start();
-        			}
+            }
+            if (_CPU.isExecuting) {
+      				if (_CpuScheduler.determineNeedToContextSwitch()) {
+      					_CpuScheduler.contextSwitch();
+      				}
+      			} else {
+      				_CpuScheduler.start();
+      			}
       				//_ResidentList[i].printToScreen();
-    			  }
     		  }
         }
 
@@ -588,7 +588,7 @@ module TSOS {
           if (args.length > 0) {
       			var Pid = parseInt(args[0]);
       			var foundProcess = null;
-      			if (_CurrentProcess && _CurrentProcess.pcb.pid === Pid) {
+      			if (_CurrentProcess && _CurrentProcess.pcb.Pid === Pid) {
       				foundProcess = _CurrentProcess;
       				_CurrentProcess.state = TERMINATED;
       				_CurrentProcess.printToScreen();
@@ -596,7 +596,7 @@ module TSOS {
       				_CpuScheduler.contextSwitch();
       			} else {
       				for (var i = 0; i < _ReadyQueue.length; i++) {
-      					if (_ReadyQueue[i].pcb.pid === Pid) {
+      					if (_ReadyQueue[i].pcb.Pid === Pid) {
       						foundProcess = _ReadyQueue[i];
       						_ReadyQueue[i].state = TERMINATED;
       						_ReadyQueue[i].printToScreen();

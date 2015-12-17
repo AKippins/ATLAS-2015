@@ -69,5 +69,9 @@ module TSOS {
         this.pcb.instruction = _CPU.instruction;
         this.pcb.limit = _CPU.limit;
       };
+
+      public processSwapName() {
+      	return 'swap' + this.pcb.Pid;
+      };
     }
   }

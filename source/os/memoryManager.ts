@@ -26,28 +26,42 @@
        }
 
        public load(code, priority): number{
-         var programLocation = this.getOpenProgramLocation();
-         console.log(programLocation);
-         // Create a new PCB
-      	 var thisPcb = new Pcb();
+          var programLocation = this.getOpenProgramLocation();
+        	if (programLocation === null) {
+        		var newProcessState = new ProcessState();
+        		newProcessState.pcb = new Pcb();
+        		var newFile = _krnFileSystemDriver.createFile(newProcessState.processSwapName());
+        		if (newFile.status === 'error') {
+        			_StdIn.putText('No available program locations in memory nor in the file system');
+        			return null;
+        		}
+        		var writeToFs = _krnFileSystemDriver.writeFile(newProcessState.processSwapName(), code);
+        		if (writeToFs.status === 'error') {
+        			_StdIn.putText(writeToFs.message);
+        			return null;
+        		}
+        		newProcessState.location = INFILESYSTEM;
+        		newProcessState.priority = priority;
+        		_ResidentList[newProcessState.pcb.Pid] = newProcessState;
+        		return newProcessState.pcb.Pid;
+        	} else {
+           console.log(programLocation);
+        	 var thisPcb = new Pcb();
 
-      	 thisPcb.base = ((programLocation + 1) * PROGRAM_SIZE) - PROGRAM_SIZE;
+        	 thisPcb.base = ((programLocation + 1) * PROGRAM_SIZE) - PROGRAM_SIZE;
 
-      	 thisPcb.limit = ((programLocation + 1) * PROGRAM_SIZE) - 1;
-         thisPcb.location = programLocation;
+        	 thisPcb.limit = ((programLocation + 1) * PROGRAM_SIZE) - 1;
+           thisPcb.location = programLocation;
 
-      	 // Make a new ProcessState instance and put it on the ResidentList
-      	 var newProcessState = new ProcessState();
-      	 newProcessState.pcb = thisPcb;
-      	 newProcessState.location = INMEMORY;
-      	 newProcessState.priority = priority;
-      	 _ResidentList[thisPcb.Pid] = newProcessState;
-      	 // Actually load the program into memory
-      	 this.storeToMem(code, programLocation);
-         this.update();
-      	 // Return the pid
-      	 return thisPcb.Pid;
-
+        	 var newProcessState = new ProcessState();
+        	 newProcessState.pcb = thisPcb;
+        	 newProcessState.location = INMEMORY;
+        	 newProcessState.priority = priority;
+        	 _ResidentList[thisPcb.Pid] = newProcessState;
+        	 this.storeToMem(code, programLocation);
+           this.update();
+        	 return thisPcb.Pid;
+         }
 
 
 
@@ -107,7 +121,6 @@
       public readFromMem(address): any{
         address += _ResidentList[RunningProcess].pcb.base
         var memId = "mem" + address;
-        //document.getElementById(memId).className = "active";
         return this.memory.memory[address];
       }
 
@@ -167,9 +180,8 @@
 
       public remFromResident(pid): boolean{
         var removed = false;
-        // Find the element in the ResidentList with the given pid
         for (var i = 0; i < _ResidentList.length; i++) {
-          if (_ResidentList[i] && _ResidentList[i].pcb.pid === pid) {
+          if (_ResidentList[i] && _ResidentList[i].pcb.Pid === pid) {
             var location = 0;
             for (var i = 0; i < this.locations.length; i++) {
               if (this.locations[i].base === _ResidentList[i].pcb.base) {
@@ -177,13 +189,10 @@
               }
             }
             if (location === -1) {
-              // Delete the process on the hard drive
-              //_FileSystem.deleteFile(_ResidentList[i].processSwapName(), true);
+              _krnFileSystemDriver.deleteFile(_ResidentList[i].processSwapName(), true);
             } else {
-              // Mark the location in memory as available
               this.locations[location].active = false;
             }
-            // Remove it from the ResidentList
             _ResidentList.splice(i, 1);
             removed = true;
           }
@@ -222,6 +231,63 @@
                output += "</tr>";
            }
            document.getElementById("divPCB").innerHTML = output;
+      }
+
+      public rollOut(program) {
+      	_Kernel.krnTrace('Rolling out PID ' + program.pcb.Pid);
+      	var createFile = _krnFileSystemDriver.createFile(program.processSwapName());
+      	if (createFile.status === 'error') {
+      		return false;
+      	}
+      	var locationInMemory = 0;
+        for (var i = 0; i < this.locations.length; i++) {
+          if (this.locations[i].base === _ResidentList[i].pcb.base) {
+            locationInMemory = i;
+          }
+        }
+      	if (locationInMemory === -1) {
+      		return false;
+      	}
+      	var writeFile = _krnFileSystemDriver.writeFile(program.processSwapName(), this.readProgramAtLocation(locationInMemory));
+      	if (writeFile.status === 'error') {
+      		return false;
+      	}
+      	this.locations[locationInMemory].active = false;
+      	program.pcb.base = -1;
+      	program.pcb.limit = -1;
+      	program.location = INFILESYSTEM;
+      	this.update();
+      	return true;
+      }
+
+      public rollIn(program) {
+      	_Kernel.krnTrace('Rolling in PID ' + program.pcb.Pid + ' from file system');
+      	var programLocation = this.getOpenProgramLocation();
+      	if (programLocation === null) {
+      		return false;
+      	}
+      	var fileFromDisk = _krnFileSystemDriver.readFile(program.processSwapName());
+      	if (fileFromDisk.status === 'error') {
+      		return false;
+      	}
+      	this.storeToMem(fileFromDisk.data, programLocation);
+      	var deleteFromDisk = _krnFileSystemDriver.deleteFile(program.processSwapName(), true);
+      	if (deleteFromDisk.status === 'error') {
+      		return false;
+      	}
+      	program.pcb.base = this.locations[programLocation].base;
+      	program.pcb.limit = this.locations[programLocation].limit;
+      	program.location = INMEMORY;
+      	this.update();
+      	return true;
+      }
+
+      public readProgramAtLocation(location) {
+      	var program = "";
+      	for (var i = this.locations[location].base; i < this.locations[location].limit; i++) {
+      		program += this.memory.memory[i] + " ";
+      	}
+      	return program.trim();
       }
 
     }

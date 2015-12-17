@@ -77,6 +77,10 @@ var TSOS;
             this.pcb.limit = _CPU.limit;
         };
         ;
+        ProcessState.prototype.processSwapName = function () {
+            return 'swap' + this.pcb.Pid;
+        };
+        ;
         return ProcessState;
     })();
     TSOS.ProcessState = ProcessState;
