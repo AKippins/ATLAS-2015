@@ -104,8 +104,9 @@ module TSOS {
               break;
             case "FF": this.systemCall();
               break;
-            default:console.log("Don't know what to do with this, I'm gonna brake now... " + instruction)
-                    this.isExecuting = false
+            default:console.log("Don't know what to do with this, I'm gonna brake now... " + instruction);
+                    _CurrentProcess.state = TERMINATED;
+                    _CpuScheduler.contextSwitch();
               break;
           }
         }
@@ -182,7 +183,7 @@ module TSOS {
 	        _CurrentProcess.pcb.Yreg = this.Yreg;
 	        _CurrentProcess.pcb.Zflag = this.Zflag;
           _CurrentProcess.state = TERMINATED;
-          _MemoryManager.locations[_CurrentProcess.pcb.location].active = false;
+          //_MemoryManager.locations[_CurrentProcess.pcb.location].active = false;
 			    _CpuScheduler.contextSwitch();
           //_MemoryManager.clearMem();
         }
